@@ -1,0 +1,17 @@
+{
+    "tasks": [
+        {
+            "label": "node start",
+            "group": "build",
+            "type": "shell",
+            "command": "npm run start",
+        },
+        {
+            "label": "temp start",
+            "group": "build",
+            "type": "shell",
+            "command": "npm run temp",
+        },
+
+    ]
+}

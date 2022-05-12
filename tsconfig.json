@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": false,
+        "esModuleInterop": true,
+        // "sourceMap": true,
+        // "module": "esnext",
+        "target": "ESNext",
+        "moduleResolution": "node",
+        // "noEmitHelpers": true,
+        "outDir": "build",
+        // "removeComments": false,
+    }
+}
