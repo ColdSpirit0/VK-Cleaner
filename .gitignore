@@ -2,3 +2,4 @@ node_modules
 seleniumUserData
 Archive
 .env
+progress.json
