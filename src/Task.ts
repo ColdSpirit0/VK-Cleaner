@@ -1,5 +1,5 @@
 
-export enum Tasks {
+export enum Task {
     None,
     DeleteLikes,
     DeleteComments,

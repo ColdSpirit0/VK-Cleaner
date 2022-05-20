@@ -10,7 +10,8 @@ let config = {
     userDataPath: "./seleniumUserData",
     cookiesPath: "./vk.cookies",
     dontCloseBrowser: true,
-    progressFilePath: "./progress.json"
+    progressFilePath: "./progress.json",
+    reportsDirectoryPath: "./reports/"
     // token: process.env.VK_TOKEN,
     // downloadPath: "./downloads",
     // likes: {

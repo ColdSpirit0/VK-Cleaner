@@ -1,4 +1,4 @@
-import { Tasks } from "./Tasks";
+import { Task } from "./Task";
 import config from "./config";
 import fs from "fs";
 import { isExists } from "./utils/fs";
@@ -8,7 +8,7 @@ import path from "path";
 // TODO: Make a class
 
 export interface Progress {
-    task: Tasks;
+    task: Task;
     data: null | any[];
     index: number;
 }
