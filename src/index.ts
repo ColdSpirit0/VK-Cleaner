@@ -12,11 +12,13 @@ main().catch(console.log)
 export let driver: WebDriver
 
 async function main() {
+    // init
     console.clear()
     driver = await initDriver()
     let progress: Progress = await getProgress()
     await fs.promises.mkdir(config.reportsDirectoryPath, {recursive: true})
 
+    // work with vk
     try {
         await loginVK()
         switch (progress.task) {
@@ -35,9 +37,11 @@ async function main() {
         console.log("got error in main:", error)
     }
 
+    // end
     await saveProgress(progress)
 
     if (config.dontCloseBrowser) {
+        // TODO: end nodejs when window closed
         await driver.sleep(100000000)
     }
 }

@@ -11,7 +11,8 @@ let config = {
     cookiesPath: "./vk.cookies",
     dontCloseBrowser: true,
     progressFilePath: "./progress.json",
-    reportsDirectoryPath: "./reports/"
+    reportsDirectoryPath: "./reports/",
+    manualRemoveReportFilename: "_ManualRemove"
     // token: process.env.VK_TOKEN,
     // downloadPath: "./downloads",
     // likes: {

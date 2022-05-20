@@ -23,6 +23,16 @@ export async function waitForElements(selector: string) {
     }
 }
 
+export async function findElementsNow(selector: string) {
+    let locator = selectorToLocator(selector)
+    // try {
+    return await driver.findElements(locator)
+    // } catch (error) {
+    //     return []
+    // }
+}
+
+
 async function waitForElementsLocator(locator: Locator) {
     return await driver.wait(until.elementsLocated(locator), config.waitElementTimeout)
 }
@@ -47,7 +57,7 @@ export async function isElementVisible(selector: string, now = false) {
     return true
 }
 
-function selectorToLocator(selector: string): Locator {
+export function selectorToLocator(selector: string): Locator {
     // if xpath selector
     if (selector.startsWith("/") || selector.startsWith("(")) {
         // replace old class() to new class()
