@@ -5,10 +5,12 @@ let config = {
     archivePath: "./Archive",
     login: process.env.VK_LOGIN,
     pass: process.env.VK_PASS,
-    waitElementTimeout: 5000,
+    waitElementTimeout: 3000,
+    actionCompleteTimeout: 1000,
     userDataPath: "./seleniumUserData",
     cookiesPath: "./vk.cookies",
     dontCloseBrowser: true,
+    progressFilePath: "./progress.json"
     // token: process.env.VK_TOKEN,
     // downloadPath: "./downloads",
     // likes: {
