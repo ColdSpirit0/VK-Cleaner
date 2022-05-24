@@ -1,5 +1,6 @@
 import fs from "fs";
 import nodePath from "path";
+import { logger } from "./logger";
 
 export async function isExists(path: string): Promise<boolean> {
     try {
@@ -36,7 +37,7 @@ export async function getFiles(path, extension = null, reportOther = false) {
                 filtered.push(file)
             }
             else if (reportOther) {
-                console.error("found strange file:", file);
+                logger.error("found strange file:", file);
             }
         }
 

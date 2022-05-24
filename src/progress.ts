@@ -3,6 +3,7 @@ import config from "./config";
 import fs from "fs";
 import { isExists } from "./utils/fs";
 import path from "path";
+import { logger } from "./utils/logger";
 
 
 // TODO: Make a class
@@ -28,6 +29,6 @@ export async function getProgress() {
 }
 
 export async function saveProgress(progress: Progress) {
-    console.log("saving progress", path.resolve(config.progressFilePath))
+    logger.log("saving progress", path.resolve(config.progressFilePath))
     await fs.promises.writeFile(config.progressFilePath, JSON.stringify(progress), { encoding: "utf-8" })
 }

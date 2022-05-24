@@ -86,3 +86,5 @@ export class Logger {
         await fs.promises.writeFile(filePath, JSON.stringify(obj, null, 4))
     }
 }
+
+export let logger = new Logger("mainlog")

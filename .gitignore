@@ -4,3 +4,4 @@ Archive
 .env
 progress.json
 reports/
+logs/

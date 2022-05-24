@@ -5,8 +5,9 @@ import { loginVK } from "./loginVK"
 import { getProgress, Progress, saveProgress } from "./progress"
 import { Task } from "./Task"
 import fs from "fs"
+import { logger } from "./utils/logger"
 
-main().catch(console.log)
+main().catch(logger.error)
 
 async function main() {
     // init
@@ -31,7 +32,7 @@ async function main() {
         progress.index = 0
 
     } catch (error) {
-        console.log("got error in main:", error)
+        logger.error("got error in main:\n", error)
     }
 
     // end

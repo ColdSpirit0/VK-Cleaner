@@ -1,5 +1,6 @@
 import config from "./config";
 import { driver } from "./driverInstance";
+import { logger } from "./utils/logger";
 import { clickElement, isElementVisible, waitForElement } from "./utils/selenium";
 
 export async function loginVK() {
@@ -9,7 +10,7 @@ export async function loginVK() {
     // check if signed in already, no login required
     let isSignedIn = await isElementVisible(".TopNavBtn__profileImg");
     if (!isSignedIn) {
-        console.log("sign in with login/pass");
+        logger.log("sign in with login/pass");
 
         // click "login"
         await clickElement(".VkIdForm__signInButton");
