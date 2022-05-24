@@ -1,6 +1,5 @@
 import config from "./config"
-import { WebDriver } from "selenium-webdriver"
-import { initDriver } from "./driverInstance"
+import { initDriver, driver } from "./driverInstance"
 import { deleteLikes } from "./deleteLikes"
 import { loginVK } from "./loginVK"
 import { getProgress, Progress, saveProgress } from "./progress"
@@ -9,15 +8,13 @@ import fs from "fs"
 
 main().catch(console.log)
 
-export let driver: WebDriver
-
 async function main() {
     // init
     console.clear()
-    driver = await initDriver()
+    await initDriver()
     let progress: Progress = await getProgress()
     await fs.promises.mkdir(config.reportsDirectoryPath, {recursive: true})
-
+    
     // work with vk
     try {
         await loginVK()

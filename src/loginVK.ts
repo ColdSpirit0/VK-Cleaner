@@ -1,6 +1,6 @@
 import config from "./config";
+import { driver } from "./driverInstance";
 import { clickElement, isElementVisible, waitForElement } from "./utils/selenium";
-import { driver } from "./index";
 
 export async function loginVK() {
     await driver.get("https://vk.com");
