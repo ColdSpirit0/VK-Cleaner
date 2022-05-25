@@ -1,10 +1,18 @@
-import { By, Locator, until } from "selenium-webdriver"
+import { By, Locator, until, WebElement } from "selenium-webdriver"
 import { driver } from "../driverInstance"
 import config from "../config"
 
-export async function clickElement(selector: string) {
-    let locator = selectorToLocator(selector)
-    let element = await waitForElementLocator(locator)
+export async function clickElement(elementData: string | WebElement) {
+    let element: WebElement = null
+    if (typeof elementData === "string") {
+        let locator = selectorToLocator(elementData)
+        element = await waitForElementLocator(locator)
+    }
+    else {
+        element = elementData
+    }
+
+    await scrollToElement(element)
     await element.click()
     return element
 }
@@ -68,4 +76,13 @@ export function selectorToLocator(selector: string): Locator {
     else {
         return By.css(selector)
     } 
+}
+
+export async function scrollToElement(element: WebElement) {
+    await driver.executeAsyncScript(function (element, resolve) {
+        element.scrollIntoView({block: "center"})
+        console.log(element)
+        console.log(arguments)
+        resolve()
+    }, element)
 }

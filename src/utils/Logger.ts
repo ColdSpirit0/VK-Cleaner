@@ -40,7 +40,7 @@ export class Logger {
     private readonly logSource: string
 
     private logFile: fs.WriteStream = null
-    logPath: string
+    readonly logPath: string
 
     constructor(logSource: string) {
         this.logStdout = process.stdout;

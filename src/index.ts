@@ -7,7 +7,7 @@ import { Task } from "./Task"
 import fs from "fs"
 import { logger } from "./utils/logger"
 
-main().catch(logger.error)
+main().catch(console.log)
 
 async function main() {
     // init
@@ -33,14 +33,20 @@ async function main() {
 
     } catch (error) {
         logger.error("got error in main:\n", error)
+        logger.error("data item:", progress.data[progress.index])
     }
 
     // end
     await saveProgress(progress)
 
-    if (config.dontCloseBrowser) {
-        // TODO: end nodejs when window closed
-        await driver.sleep(100000000)
+    // wait for browser closed manually
+    while (config.dontCloseBrowser) {
+        await driver.sleep(1000)
+        let handles = await driver.getAllWindowHandles()
+        if (handles.length === 0) {
+            await driver.quit()
+            break
+        }
     }
 }
 
