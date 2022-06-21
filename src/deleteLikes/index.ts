@@ -10,7 +10,7 @@ import { isElementExists, waitForElement } from "../utils/selenium";
 import { deleteLikeBase } from "./base";
 import { deleteLikeWallReply } from "./wallReply";
 import { waitCaptchaWindow } from "./captcha";
-import { deleteLikePhotoComments, deleteLikeVideoComments } from "./comments";
+import { deleteLikePhotoComments, deleteLikeTopicComments, deleteLikeVideoComments } from "./comments";
 import { reporter, manualRemoveReporter } from "./reporter";
 
 let likesOrder = [
@@ -19,7 +19,8 @@ let likesOrder = [
     // {type: LikeType.photo, reverse: false},
     // {type: LikeType.photo_comment, reverse: false},
     // {type: LikeType.video, reverse: false},
-    {type: LikeType.video_comment, reverse: false},
+    // {type: LikeType.video_comment, reverse: false},
+    {type: LikeType.topic_comment, reverse: false},
 ]
 
 export async function deleteLikes(progress: Progress) {
@@ -68,6 +69,10 @@ export async function deleteLikes(progress: Progress) {
                 
                 case LikeType.video_comment:
                     await deleteLikeVideoComments(like)
+                    break
+
+                case LikeType.topic_comment:
+                    await deleteLikeTopicComments(like)
                     break
 
                 default:
