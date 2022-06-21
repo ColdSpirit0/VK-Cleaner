@@ -1,71 +1,270 @@
-import { By, Locator, until, WebElement } from "selenium-webdriver"
+import { By, Locator, until, WebDriver, WebElement } from "selenium-webdriver"
 import { driver } from "../driverInstance"
 import config from "../config"
+import { isString, isWebElement } from "./typeCheckers"
+import { logger } from "./logger"
+import { Command } from "selenium-webdriver/lib/command"
 
-export async function clickElement(elementData: string | WebElement) {
-    let element: WebElement = null
-    if (typeof elementData === "string") {
-        let locator = selectorToLocator(elementData)
-        element = await waitForElementLocator(locator)
-    }
-    else {
-        element = elementData
+/*
+
+ACTIONS (splitted by function)
+    click
+    find one element
+    find many elements
+    check element exists
+    scroll to element
+
+TYPES (in options)
+    selector argument or locator argument - first parameter, check by type
+    wait element or get it now
+    should throw error or not
+*/
+type UserActionOptions = {
+    now?: boolean,
+    waitTime?: number
+    safe?: boolean
+}
+
+type CountChangeInfo = {
+    changed: boolean
+    from: number
+    to: number
+}
+
+// safe by default
+type UserActionSafeOptions = Omit<UserActionOptions, "safe">
+type UserActionWaitOptions = Omit<UserActionOptions, "now">
+
+
+type QueryType = string | Locator
+type ActionQueryType = QueryType | WebElement
+
+
+const defaultOptions: UserActionOptions = {
+    now: false,
+    waitTime: config.waitElementTimeout,
+    safe: true,
+}
+
+export async function clickElement(elementData: ActionQueryType, options?: UserActionOptions) {
+    options = normalizeOptions(options)
+    let element = await getElement(elementData, options)
+
+    if (element !== null) {
+        await scrollToElement(element)
+        await element.click()
     }
 
-    await scrollToElement(element)
-    await element.click()
     return element
 }
 
-export async function waitForElement(selector: string) {
-    let locator = selectorToLocator(selector)
-    return await waitForElementLocator(locator)
-}
 
-export async function waitForElements(selector: string) {
-    let locator = selectorToLocator(selector)
+export async function waitElementCountChanged(query: QueryType, options?: UserActionWaitOptions): Promise<CountChangeInfo> {
+    options = normalizeOptions(options)
+    const findOptions: UserActionOptions = {safe: options.safe, now: true}
+
+    let initialCount: number = -1
+    let currentCount: number = -1
+
     try {
-        return await waitForElementsLocator(locator)
+        initialCount = (await findElements(query, findOptions)).length
+
+         await driver.wait(async function () {
+            currentCount = (await findElements(query, findOptions)).length
+            return initialCount !== currentCount
+        }, options.waitTime)
+
     } catch (error) {
-        return []
-    }
-}
-
-export async function findElementsNow(selector: string) {
-    let locator = selectorToLocator(selector)
-    // try {
-    return await driver.findElements(locator)
-    // } catch (error) {
-    //     return []
-    // }
-}
-
-
-async function waitForElementsLocator(locator: Locator) {
-    return await driver.wait(until.elementsLocated(locator), config.waitElementTimeout)
-}
-
-async function waitForElementLocator(locator: Locator) {
-    return await driver.wait(until.elementLocated(locator), config.waitElementTimeout)
-}
-
-export async function isElementVisible(selector: string, now = false) {
-    let locator = selectorToLocator(selector)
-
-    try {
-        if (now) {
-            await driver.findElement(locator)
+        if (options.safe) {
+            logger.log("NOT changed")
+            return {changed: false, from: initialCount, to: currentCount}
         }
         else {
-            await driver.wait(until.elementLocated(locator), config.waitElementTimeout)
+            throw error
+        }
+    }
+
+    return {changed: true, from: initialCount, to: currentCount}
+}
+
+
+// not tested
+export async function hoverElement(elementData: ActionQueryType, options?: UserActionOptions) {
+    options = normalizeOptions(options)
+    let element = await getElement(elementData, options)
+
+    if (element !== null) {
+        await scrollToElement(element)
+        await driver.actions().move({x: 0, y: 0, origin: element}).perform()
+    }
+
+    return element
+}
+
+export async function findElement(query: QueryType, options?: UserActionOptions): Promise<WebElement> {
+    let locator: Locator = getLocator(query)
+    options = normalizeOptions(options)
+
+    try {
+        if (options.now) {
+            return await driver.findElement(locator)
+        }
+        else {
+            return await driver.wait(until.elementLocated(locator), options.waitTime)
         }
     } catch (error) {
-        return false
+        if (options.safe) {
+            return null
+        }
+        else {
+            throw error
+        }
     }
+}
+
+export async function findElements(query: QueryType, options?: UserActionOptions): Promise<WebElement[]> {
+    let locator: Locator = getLocator(query)
+    options = normalizeOptions(options)
+
+    try {
+        if (options.now) {
+            return await driver.findElements(locator)
+        }
+        else {
+            return await driver.wait(until.elementsLocated(locator), options.waitTime)
+        }
+    } catch (error) {
+        if (options.safe) {
+            return []
+        }
+        else {
+            throw error
+        }
+    }
+}
+
+export async function waitForElement(query: QueryType, options?: UserActionWaitOptions) {
+    // same as find element but now:false by default
+    let optionsNorm = normalizeOptions(options)
+    // optionsNorm.now = false
+    return await findElement(query, optionsNorm)
+}
+
+export async function waitForElementHidden(elementData: ActionQueryType, options?: UserActionWaitOptions) {
+    options = normalizeOptions(options)
+    let element = await getElement(elementData, options)
+
+    // wait for element disappear
+    try {
+        await driver.wait(until.elementIsNotVisible(element), options.waitTime)
+    } catch (error) {
+        if (!options.safe) {
+            throw error
+        }
+    }
+}
+
+export async function waitForElementDeleted(elementData: ActionQueryType, options?: UserActionWaitOptions) {
+    options = normalizeOptions(options)
+    let element = await getElement(elementData, options)
+
+    // wait for element disappear
+    try {
+        await driver.wait(until.stalenessOf(element), options.waitTime)
+    } catch (error) {
+        if (!options.safe) {
+            throw error
+        }
+        else {
+            return false
+        }
+    }
+
     return true
 }
 
-export function selectorToLocator(selector: string): Locator {
+export async function waitForElements(query: QueryType, options?: UserActionWaitOptions) {
+    // same as find elements but now:false by default
+    let optionsNorm = normalizeOptions(options)
+    // optionsNorm.now = false
+    return await findElements(query, optionsNorm)
+}
+
+export async function isElementExists(query: QueryType, options?: UserActionSafeOptions) {
+    let locator = getLocator(query)
+    options = normalizeOptions(options)
+
+    let element = await findElement(query, options)
+    return element !== null
+}
+
+export async function scrollToElement(elementData: ActionQueryType, options?: UserActionOptions) {
+    options = normalizeOptions(options)
+    let element = await getElement(elementData, options)
+
+    // scroll to it if it exists
+    if (element !== null) {
+        await driver.executeAsyncScript(function (element, resolve) {
+            element.scrollIntoView({ block: "center", behavior: "instant"})
+            resolve()
+        }, element)
+    }
+
+    return element
+}
+
+export async function scrollToTop() {
+    await driver.executeAsyncScript(function (resolve) {
+        // @ts-ignore
+        window.scrollTo({left: 0, top: 0, behavior: "instant"})
+        resolve()
+    })
+}
+
+export async function scrollToBottom() {
+    await driver.executeAsyncScript(function (resolve) {
+        // @ts-ignore
+        window.scrollTo({left: 0, top: document.body.scrollHeight, behavior: "instant"})
+        resolve()
+    })
+}
+
+export async function browserLog(...args: any[]) {
+    await driver.executeAsyncScript(function (innerArgs: any[], resolve) {
+        console.log(...innerArgs)
+        resolve()
+    }, args)
+}
+
+
+// should be opened dev tools
+export async function browserDebugger() {
+    await driver.executeAsyncScript(function (resolve) {
+        debugger;
+        resolve()
+    })
+}
+
+async function getElement(elementData: ActionQueryType, options: UserActionOptions): Promise<WebElement> {
+    let element: WebElement = null
+    if (isWebElement(elementData)) {
+        element = elementData
+    }
+    else {
+        element = await findElement(elementData, options)
+    }
+    return element
+}
+
+function getLocator(query: QueryType): Locator {
+    if (isString(query)) {
+        return selectorToLocator(query)
+    }
+
+    return query
+}
+
+function selectorToLocator(selector: string): Locator {
     // if xpath selector
     if (selector.startsWith("/") || selector.startsWith("(")) {
         // replace old class() to new class()
@@ -75,14 +274,15 @@ export function selectorToLocator(selector: string): Locator {
     // if css selector
     else {
         return By.css(selector)
-    } 
+    }
 }
 
-export async function scrollToElement(element: WebElement) {
-    await driver.executeAsyncScript(function (element, resolve) {
-        element.scrollIntoView({block: "center"})
-        console.log(element)
-        console.log(arguments)
-        resolve()
-    }, element)
+function normalizeOptions(optionsParam: any): UserActionOptions {
+    let optionsBase = {...defaultOptions}
+
+    if (typeof optionsParam === "object") {
+        Object.assign(optionsBase, optionsParam)
+    }
+
+    return optionsBase
 }

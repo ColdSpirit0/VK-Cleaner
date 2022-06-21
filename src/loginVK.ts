@@ -1,14 +1,14 @@
 import config from "./config";
 import { driver } from "./driverInstance";
 import { logger } from "./utils/logger";
-import { clickElement, isElementVisible, waitForElement } from "./utils/selenium";
+import { clickElement, isElementExists, waitForElement } from "./utils/selenium";
 
 export async function loginVK() {
     await driver.get("https://vk.com");
 
     // XXX: test it again
     // check if signed in already, no login required
-    let isSignedIn = await isElementVisible(".TopNavBtn__profileImg");
+    let isSignedIn = await isElementExists(".TopNavBtn__profileImg");
     if (!isSignedIn) {
         logger.log("sign in with login/pass");
 

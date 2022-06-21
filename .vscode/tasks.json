@@ -12,6 +12,12 @@
             "type": "shell",
             "command": "npm run temp",
         },
+        {
+            "label": "run test",
+            "group": "test",
+            "type": "shell",
+            "command": "npm test",
+        },
 
     ]
 }

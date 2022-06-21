@@ -7,10 +7,19 @@ import { Progress } from "./progress";
 import { Reporter } from "./Reporter";
 import { Task } from "./Task";
 import { logger } from "./utils/logger";
-import { clickElement, findElementsNow, isElementVisible, waitForElement, waitForElements } from "./utils/selenium";
+import { browserDebugger, browserLog, clickElement, findElement, findElements, hoverElement, isElementExists, scrollToBottom, scrollToElement, waitElementCountChanged, waitForElement, waitForElementDeleted, waitForElementHidden } from "./utils/selenium";
 
 const reporter = new Reporter(Task.DeleteLikes)
 const manualRemoveReporter = new Reporter(config.manualRemoveReportFilename)
+
+let likesOrder = [
+    // {type: LikeType.wall, reverse: true},
+    {type: LikeType.wall_reply, reverse: false},
+    // {type: LikeType.photo, reverse: false},
+    // {type: LikeType.photo_comment, reverse: false},
+    // {type: LikeType.video, reverse: false},
+    // {type: LikeType.video_comment, reverse: false},
+]
 
 export async function deleteLikes(progress: Progress) {
     if (progress.task !== Task.DeleteLikes) {
@@ -19,35 +28,62 @@ export async function deleteLikes(progress: Progress) {
         // get data from parser
         let likesParser = new LikesParser();
         likesParser.init(config.archivePath);
-        let likesData = await likesParser.parse();
+        let likesDataRaw = await likesParser.parse();
 
-        // TODO: likes from wall should be first in reverse order (old to new)
+        let likesData = []
+        for (const orderItem of likesOrder) {
+            let likesTyped = likesDataRaw.filter(a => a.type === orderItem.type)
+            
+            if (orderItem.reverse) {
+                likesTyped.reverse()
+            }
+
+            likesData = likesData.concat(likesTyped)
+        }
 
         progress.data = likesData
     }
 
     for (; progress.index < progress.data.length; progress.index++) {
-        const like = progress.data[progress.index];
-        //if (progress.index == 3) throw "LOL"
-        await deleteLike(like);
+        const like: LikeDataItem = progress.data[progress.index];
+
+        let pageOk = await openPage(like)
+
+        if (pageOk) {
+            switch (like.type) {
+                case LikeType.wall:
+                case LikeType.video:
+                case LikeType.photo:
+                    await deleteLikeBase(like)
+                    break
+            
+                case LikeType.wall_reply:
+                    await deleteLikeWallReply(like)
+                    break
+
+                default:
+                    await deleteLikeManual(like)
+                    break;
+            }
+        }
     }
 }
 
-async function deleteLike(like: LikeDataItem) {
-    // skip not supported types
-    if (![LikeType.photo, LikeType.video, LikeType.wall].includes(like.type)) {
-        await reporter.report(like.url, "Требуется удаление вручную")
-        await manualRemoveReporter.report(like.url, "Требуется удаление вручную")
-        return
-    }
+// just save to log
+async function deleteLikeManual(like: LikeDataItem) {
+    await reporter.report(like.url, "Требуется удаление вручную")
+    await manualRemoveReporter.report(like.url, "Требуется удаление вручную")
+}
 
+async function openPage(like: LikeDataItem) {
     // open url 
+    logger.log("Opening", like.url)
     await driver.get(like.url);
-
+    
     // TODO: check captcha there (if vk blocked you)
 
     // wtf fix
-    if (!await isElementVisible("body")) {
+    if (!await isElementExists("body")) {
         await driver.navigate().refresh()
     }
 
@@ -55,29 +91,31 @@ async function deleteLike(like: LikeDataItem) {
     let url = await driver.getCurrentUrl()
     if (url.startsWith("https://vk.com/blank.php?rkn=")) {
         await reporter.report(like.url, "Заблокирован")
-        return
+        return false
     }
 
     // wait for base element
+    // may to throw error, its ok
     await waitForElement(`#content`)
 
-    // if (!await isElementVisible(`#content`)
-    //     && await isElementVisible(`//*[contains(text(), "Этот материал заблокирован на территории РФ")]`)) {
-    // }
-
     // report if access error
-    if (await isElementVisible(`//*[class("message_page_title") and normalize-space(text())="Ошибка"]`, true)) {
+    if (await isElementExists(`//*[class("message_page_title") and normalize-space(text())="Ошибка"]`, {now: true})) {
         await reporter.report(like.url, "Ошибка")
-        return 
+        return false
     }
 
+    return true
+}
+
+// removes like of types: photo, video, wall
+async function deleteLikeBase(like: LikeDataItem) {
     // to be sure photo/video/other is visible
     // reload page if not
     // await waitForElement(`#pv_photo`)
-    while (!await isElementVisible(`//*[@id="pv_photo" or class("VideoLayerInfo") or class("post")]`)) {
+    while (!await isElementExists(`//*[@id="pv_photo" or class("VideoLayerInfo") or class("post")]`)) {
         await driver.navigate().refresh()
     }
-    
+
     /*
         photo like and comments
             `//*[class("like_btn") and @title="Нравится"]//self::*[class("active")]`
@@ -86,8 +124,7 @@ async function deleteLike(like: LikeDataItem) {
         combined ^
     */
     let selector = `(//*[class("like_btn") and @title="Нравится"]//self::*[class("active")] | //*[class("PostButtonReactions--active")]/parent::*)`
-    let likeButtons = await findElementsNow(selector)
-
+    let likeButtons = await findElements(selector, {now: true})
 
     for (const button of likeButtons) {
         await clickElement(button)
@@ -107,7 +144,7 @@ async function waitCaptchaSolved() {
     let captchaSolved = false
     let wasCaptcha = false
 
-    while(!captchaSolved) {
+    while (!captchaSolved) {
         wasCaptcha = await waitCaptchaWindow()
 
         if (wasCaptcha) {
@@ -131,7 +168,7 @@ async function waitCaptchaWindow() {
     let captchaExisted = false
 
     while (captchaExists) {
-        let captchas = await findElementsNow(`.captcha`)
+        let captchas = await findElements(`.captcha`, {now: true})
 
         if (captchas.length > 0) {
             captchaExisted = true
@@ -144,3 +181,95 @@ async function waitCaptchaWindow() {
 
     return captchaExisted
 }
+
+async function deleteLikeWallReply(like: LikeDataItem) {
+    // wait for VK scroll
+    await driver.sleep(1000)
+
+    // reorder comments ascending
+    // let reoderElement = await clickElement(`.post_replies_header .post_replies_reorder`, {now: true})
+    // if (reoderElement !== null) {
+    //     await clickElement(`.post_replies_header .eltt .radiobtn[data-order="asc"]`, {safe: false})
+    //     await waitForElementHidden(`.post_replies_header .eltt`, {safe: false})
+    //     await driver.sleep(config.actionCompleteTimeout)
+    // }
+
+    // let commentsLoaded = await loadAllCommentsAuto()
+    // if (!commentsLoaded) {
+    //     await loadAllCommentsManually()
+    // }
+
+    // show answers
+    // for (const reply of await findElements(`.replies_list .replies_short_deep`, {now: true})) {
+    //     await clickElement(reply)
+    //     await driver.sleep(config.actionCompleteTimeout)
+    // }
+
+    // get all like buttons and click
+    let selector = `(//*[class("like_btn") and @title="Нравится"]//self::*[class("active")] | //*[class("PostButtonReactions--active")]/parent::*)`
+    let likeButtons = await findElements(selector, {now: true})
+
+    for (const button of likeButtons) {
+        await clickElement(button)
+        await driver.sleep(config.actionCompleteTimeout)
+        await waitCaptchaSolved()
+    }
+}
+
+async function loadAllCommentsManually() {
+    const buttonSelector = `.replies_list .replies_next_main:not(.replies_next_pre_deleted)`
+    const loaderSelector = `.replies_list .replies_next_loader`
+    const replySelector = `.replies_list > .reply`
+
+    // if button shows, scroll to it
+    do {
+        let button = await clickElement(buttonSelector, {waitTime: 1000})
+        if (button === null) break
+
+        // wait while loader shows
+        let loader = await findElement(loaderSelector, {waitTime: 1000})
+
+        await waitForElementDeleted(loader)
+    } while (true);
+
+    await scrollToBottom()
+}
+
+async function loadAllCommentsAuto() {
+    const buttonSelector = `.replies_list .replies_next_main:not(.replies_next_pre_deleted)`
+    const loaderSelector = `.replies_list .replies_next_loader`
+    const replySelector = `.replies_list > .reply`
+
+    // if button shows, scroll to it
+    do {
+        let button = await findElement(buttonSelector, {waitTime: 1000})
+        if (button === null) break
+
+        // wait while loader shows
+        let isLoaderFirst = true
+        do {
+            await scrollToBottom()
+
+            let loader = await findElement(loaderSelector, {waitTime: 1000})
+
+            // first loader should be showed
+            // second loader may be showed
+            if (loader === null) {
+                if (isLoaderFirst) {
+                    return false
+                }
+                else {
+                    break
+                }
+            }
+
+            await waitForElementDeleted(loader)
+            isLoaderFirst = false
+        } while (true);
+    } while (true);
+
+    await scrollToBottom()
+
+    return true
+}
+

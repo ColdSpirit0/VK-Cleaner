@@ -36,8 +36,9 @@ async function main() {
         logger.error("data item:", progress.data[progress.index])
     }
 
-    // end
-    await saveProgress(progress)
+    if (config.saveProgress) {
+        await saveProgress(progress)
+    }
 
     // wait for browser closed manually
     while (config.dontCloseBrowser) {

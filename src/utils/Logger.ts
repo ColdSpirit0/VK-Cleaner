@@ -2,6 +2,7 @@ import fs from "fs"
 import path from "path"
 import util from "util"
 import dateformat from "date-format"
+import config from "../config"
 
 const terminalFontStyles = {
     reset: "\x1b[0m",
@@ -48,7 +49,7 @@ export class Logger {
 
         // create directory for all loggers
         // path like: ./logs/20200101_174511/
-        if (!Logger.directoryCreated) {
+        if (config.logToFile && !Logger.directoryCreated) {
             let logTime = Logger.getCurrentDateString()
             Logger.logDirectory = path.join(Logger.logRoot, logTime)
             fs.mkdirSync(Logger.logDirectory, { recursive: true });
@@ -71,20 +72,17 @@ export class Logger {
     }
 
     error(...args: any[]) {
-        // if (this.logFile === null) {
-        //     this.createLogFile()
-        // }
-
         const message = `${util.format(...args)}\n`
-        // this.logFile.write(message);
-        fs.appendFileSync(this.logPath, message + "\n")
+        if (config.logToFile) {
+            fs.appendFileSync(this.logPath, message + "\n")
+        }
         this.logStdout.write(`${terminalFontStyles.fgRed}[${this.logSource}] ${message}${terminalFontStyles.reset}`);
     }
 
-    async dumpObject(name: string, obj: any) {
-        let filePath = path.join(Logger.logDirectory, name + ".json")
-        await fs.promises.writeFile(filePath, JSON.stringify(obj, null, 4))
-    }
+    // async dumpObject(name: string, obj: any) {
+    //     let filePath = path.join(Logger.logDirectory, name + ".json")
+    //     await fs.promises.writeFile(filePath, JSON.stringify(obj, null, 4))
+    // }
 }
 
 export let logger = new Logger("mainlog")
