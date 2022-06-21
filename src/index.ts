@@ -6,6 +6,7 @@ import { getProgress, Progress, saveProgress } from "./progress"
 import { Task } from "./Task"
 import fs from "fs"
 import { logger } from "./utils/logger"
+import { waitBrowserClosed } from "./utils/selenium"
 
 main().catch(console.log)
 
@@ -41,13 +42,8 @@ async function main() {
     }
 
     // wait for browser closed manually
-    while (config.dontCloseBrowser) {
-        await driver.sleep(1000)
-        let handles = await driver.getAllWindowHandles()
-        if (handles.length === 0) {
-            await driver.quit()
-            break
-        }
+    if (config.dontCloseBrowser) {
+        await waitBrowserClosed()
     }
 }
 

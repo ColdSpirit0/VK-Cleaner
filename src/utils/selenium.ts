@@ -51,8 +51,17 @@ export async function clickElement(elementData: ActionQueryType, options?: UserA
     let element = await getElement(elementData, options)
 
     if (element !== null) {
-        await scrollToElement(element)
-        await element.click()
+        try {
+            await scrollToElement(element)
+            await element.click()
+        } catch (error) {
+            if (options.safe) {
+                return element
+            }
+            else {
+                throw error
+            }
+        }
     }
 
     return element
@@ -285,4 +294,19 @@ function normalizeOptions(optionsParam: any): UserActionOptions {
     }
 
     return optionsBase
+}
+
+export async function waitActionComplete() {
+    await driver.sleep(config.actionCompleteTimeout)
+}
+
+export async function waitBrowserClosed() {
+    while (true) {
+        await driver.sleep(1000)
+        let handles = await driver.getAllWindowHandles()
+        if (handles.length === 0) {
+            await driver.quit()
+            break
+        }
+    }
 }
