@@ -1,8 +1,8 @@
-import config from "../config";
-import { driver } from "../driverInstance";
-import { LikeDataItem } from "../parsers/LikeParser/LikeDataItem";
-import { logger } from "../utils/logger";
-import { browserLog, clickElement, findElement, isElementExists, scrollToBottom, waitActionComplete, waitBrowserClosed, waitElementCountChanged } from "../utils/selenium";
+import config from "../../config";
+import { driver } from "../../driverInstance";
+import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
+import { logger } from "../../utils/logger";
+import { browserLog, clickElement, findElement, isElementExists, scrollToBottom, waitActionComplete, waitBrowserClosed, waitElementCountChanged } from "../../utils/selenium";
 import { deleteLikesCommon, ensurePageLoaded } from "./base";
 import { reporter } from "./reporter";
 

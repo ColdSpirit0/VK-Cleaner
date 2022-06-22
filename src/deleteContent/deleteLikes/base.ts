@@ -1,8 +1,8 @@
-import config from "../config";
-import { driver } from "../driverInstance";
-import { LikeDataItem } from "../parsers/LikeParser/LikeDataItem";
-import { clickElement, findElements, isElementExists, waitActionComplete } from "../utils/selenium";
-import { waitCaptchaSolved } from ".";
+import config from "../../config";
+import { driver } from "../../driverInstance";
+import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
+import { clickElement, findElements, isElementExists, waitActionComplete } from "../../utils/selenium";
+import { waitCaptchaSolved } from "../vkHelpers";
 import { reporter } from "./reporter";
 
 // removes like of types: photo, video, wall

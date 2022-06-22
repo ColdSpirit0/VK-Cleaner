@@ -1,8 +1,8 @@
-import config from "../config";
-import { driver } from "../driverInstance";
-import { LikeDataItem } from "../parsers/LikeParser/LikeDataItem";
-import { clickElement, findElement, findElements, scrollToBottom, waitActionComplete, waitForElementDeleted } from "../utils/selenium";
-import { waitCaptchaSolved } from ".";
+import config from "../../config";
+import { driver } from "../../driverInstance";
+import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
+import { clickElement, findElement, findElements, scrollToBottom, waitActionComplete, waitForElementDeleted } from "../../utils/selenium";
+import { waitCaptchaSolved } from "../vkHelpers";
 
 export async function deleteLikeWallReply(like: LikeDataItem) {
     // wait for VK scroll

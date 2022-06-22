@@ -1,17 +1,14 @@
-import config from "../config";
-import { driver } from "../driverInstance";
-import { LikeDataItem } from "../parsers/LikeParser/LikeDataItem";
-import { LikesParser } from "../parsers/LikeParser/LikesParser";
-import { LikeType } from "../parsers/LikeParser/LikeType";
-import { Progress } from "../progress";
-import { Task } from "../Task";
-import { logger } from "../utils/logger";
-import { isElementExists, waitForElement } from "../utils/selenium";
+import config from "../../config";
+import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
+import { LikesParser } from "../../parsers/LikeParser/LikesParser";
+import { LikeType } from "../../parsers/LikeParser/LikeType";
+import { Progress } from "../../progress";
+import { Task } from "../../Task";
 import { deleteLikeBase } from "./base";
 import { deleteLikeWallReply } from "./wallReply";
-import { waitCaptchaWindow } from "./captcha";
 import { deleteLikePhotoComments, deleteLikeTopicComments, deleteLikeVideoComments } from "./comments";
 import { reporter, manualRemoveReporter } from "./reporter";
+import { openPage } from "../vkHelpers";
 
 let likesOrder = [
     {type: LikeType.wall, reverse: true},
@@ -49,7 +46,7 @@ export async function deleteLikes(progress: Progress) {
     for (; progress.index < progress.data.length; progress.index++) {
         const like: LikeDataItem = progress.data[progress.index];
 
-        let pageOk = await openPage(like)
+        let pageOk = await openPage(like.url)
 
         if (pageOk) {
             switch (like.type) {
@@ -87,62 +84,6 @@ export async function deleteLikes(progress: Progress) {
 async function deleteLikeManual(like: LikeDataItem) {
     await reporter.report(like.url, "Требуется удаление вручную")
     await manualRemoveReporter.report(like.url, "Требуется удаление вручную")
-}
-
-async function openPage(like: LikeDataItem) {
-    // open url 
-    logger.log("Opening", like.url)
-    await driver.get(like.url);
-    
-    // TODO: check captcha there (if vk blocked you)
-
-    // wtf fix
-    if (!await isElementExists("body")) {
-        await driver.navigate().refresh()
-    }
-
-    // check it was blocked by rkn
-    let url = await driver.getCurrentUrl()
-    if (url.startsWith("https://vk.com/blank.php?rkn=")) {
-        await reporter.report(like.url, "Заблокирован")
-        return false
-    }
-
-    // wait for base element
-    // may to throw error, its ok
-    await waitForElement(`#content`)
-
-    // report if access error
-    if (await isElementExists(`//*[class("message_page_title") and normalize-space(text())="Ошибка"]`, {now: true})) {
-        await reporter.report(like.url, "Ошибка")
-        return false
-    }
-
-    return true
-}
-
-// check captcha for all window (even if it appears again)
-// captcha is solved when its was showed and missed after for 1 second
-export async function waitCaptchaSolved() {
-    let captchaSolved = false
-    let wasCaptcha = false
-
-    while (!captchaSolved) {
-        wasCaptcha = await waitCaptchaWindow()
-
-        if (wasCaptcha) {
-            // wait 1 second and check again
-            await driver.sleep(1000)
-            // next loop
-        }
-        else {
-            captchaSolved = true
-        }
-    }
-
-    if (wasCaptcha) {
-        logger.log("captcha solved")
-    }
 }
 
 

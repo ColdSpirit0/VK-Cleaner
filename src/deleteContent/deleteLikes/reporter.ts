@@ -1,6 +1,6 @@
-import config from "../config";
-import { Reporter } from "../Reporter";
-import { Task } from "../Task";
+import config from "../../config";
+import { Reporter } from "../../Reporter";
+import { Task } from "../../Task";
 
 
 export const reporter = new Reporter(Task.DeleteLikes);

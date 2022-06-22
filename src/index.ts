@@ -1,12 +1,13 @@
 import config from "./config"
 import { initDriver, driver } from "./driverInstance"
-import { deleteLikes } from "./deleteLikes"
+import { deleteLikes } from "./deleteContent/deleteLikes"
 import { loginVK } from "./loginVK"
 import { getProgress, Progress, saveProgress } from "./progress"
 import { Task } from "./Task"
 import fs from "fs"
 import { logger } from "./utils/logger"
 import { waitBrowserClosed } from "./utils/selenium"
+import { deleteComments } from "./deleteContent/deleteComments"
 
 main().catch(console.log)
 
@@ -22,10 +23,10 @@ async function main() {
         await loginVK()
         switch (progress.task) {
             default:
-            case Task.DeleteLikes:
-                await deleteLikes(progress)
-            // case Task.DeleteComments:
-                // nope
+            // case Task.DeleteLikes:
+            //     await deleteLikes(progress)
+            case Task.DeleteComments:
+                await deleteComments(progress)
         }
 
         progress.task = Task.Finished
