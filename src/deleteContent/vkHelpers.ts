@@ -1,7 +1,7 @@
 import { driver } from "../driverInstance";
 import { LikeDataItem } from "../parsers/LikeParser/LikeDataItem";
 import { logger } from "../utils/logger";
-import { findElements, isElementExists, waitForElement } from "../utils/selenium";
+import { findElement, findElements, isElementExists, waitForElement } from "../utils/selenium";
 import { reporter } from "./deleteLikes/reporter";
 
 export async function openPage(url: string) {
@@ -84,4 +84,12 @@ export async function getUserId(): Promise<number> {
         // @ts-ignore
         resolve(vk.id)
     })
+}
+export async function getProfileUrl(): Promise<string> {
+    // open vk page
+    await driver.get("https://vk.com")
+
+    // get my page url
+    let element = await findElement(`#l_pr > a`, {safe: false})
+    return await element.getAttribute("href")
 }
