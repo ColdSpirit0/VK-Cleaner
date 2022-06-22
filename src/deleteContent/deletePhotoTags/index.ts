@@ -22,7 +22,7 @@ export async function deletePhotoTags(progress: Progress) {
         deletedCount++
     } while (await deletePhotoTag(userId, profileUrlRelative));
      
-    reporter.report("Deleted tags: " + deletedCount)
+    await reporter.report("Deleted tags: " + deletedCount)
 }
 
 async function deletePhotoTag(userId: number, profileUrlRelative: string): Promise<boolean> {

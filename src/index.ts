@@ -9,6 +9,7 @@ import { logger } from "./utils/logger"
 import { waitBrowserClosed } from "./utils/selenium"
 import { deleteComments } from "./deleteContent/deleteComments"
 import { deletePhotoTags } from "./deleteContent/deletePhotoTags"
+import { exitGroups } from "./deleteContent/exitGroups"
 
 main().catch(console.log)
 
@@ -28,8 +29,10 @@ async function main() {
             //     await deleteLikes(progress)
             // case Task.DeleteComments:
             //     await deleteComments(progress)
-            case Task.DeletePhotoTags:
-                await deletePhotoTags(progress)
+            // case Task.DeletePhotoTags:
+            //     await deletePhotoTags(progress)
+            case Task.ExitGroups:
+                await exitGroups(progress)
         }
 
         progress.task = Task.Finished
