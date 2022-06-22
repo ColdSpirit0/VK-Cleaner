@@ -5,5 +5,8 @@ export enum Task {
     DeleteComments,
     DeletePhotoTags,
     ExitGroups,
+    DeleteVideos,
+    DeleteMusic,
+    DeleteWall,
     Finished,
 }

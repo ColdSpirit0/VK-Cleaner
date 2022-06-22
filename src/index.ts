@@ -10,6 +10,9 @@ import { waitBrowserClosed } from "./utils/selenium"
 import { deleteComments } from "./deleteContent/deleteComments"
 import { deletePhotoTags } from "./deleteContent/deletePhotoTags"
 import { exitGroups } from "./deleteContent/exitGroups"
+import { deleteVideos } from "./deleteContent/deleteVideos"
+import { deleteMusic } from "./deleteContent/deleteMusic"
+import { deleteWall } from "./deleteContent/deleteWall"
 
 main().catch(console.log)
 
@@ -31,8 +34,14 @@ async function main() {
             //     await deleteComments(progress)
             // case Task.DeletePhotoTags:
             //     await deletePhotoTags(progress)
-            case Task.ExitGroups:
-                await exitGroups(progress)
+            // case Task.ExitGroups:
+            //     await exitGroups(progress)
+            case Task.DeleteVideos:
+                await deleteVideos(progress)
+            // case Task.DeleteMusic:
+            //     await deleteMusic(progress)
+            // case Task.DeleteWall:
+            //     await deleteWall(progress)
         }
 
         progress.task = Task.Finished

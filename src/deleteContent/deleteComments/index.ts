@@ -8,11 +8,6 @@ import { clickElement, findElements, waitActionComplete, waitBrowserClosed } fro
 import { reporter } from "../deleteLikes/reporter"
 import { getUserId, openPage } from "../vkHelpers"
 
-type DeleteCommentsData = {
-    id: number
-    urls: string[]
-}
-
 export async function deleteComments(progress: Progress) {
     if (progress.task !== Task.DeleteComments) {
         progress.task = Task.DeleteComments
