@@ -24,15 +24,6 @@ let config = {
     actionCompleteTimeout: 1000,
     userDataPath: "./seleniumUserData",
     dontCloseBrowser: true,
-
-    // token: process.env.VK_TOKEN,
-    // downloadPath: "./downloads",
-    // likes: {
-    //     delete: true
-    // },
-    // photos: {
-    //     dump: true
-    // }
 }
 
 export default config

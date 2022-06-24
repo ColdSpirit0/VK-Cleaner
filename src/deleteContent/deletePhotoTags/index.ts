@@ -27,7 +27,6 @@ export async function deletePhotoTags(progress: Progress) {
 
 async function deletePhotoTag(userId: number, profileUrlRelative: string): Promise<boolean> {
     // open photos page
-    // TODO: check if no photos
     await driver.get(`https://vk.com/tag${userId}`)
     
     // open first photo

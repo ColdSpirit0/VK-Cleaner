@@ -28,20 +28,20 @@ async function main() {
         await loginVK()
         switch (progress.task) {
             default:
-            // case Task.DeleteLikes:
-            //     await deleteLikes(progress)
-            // case Task.DeleteComments:
-            //     await deleteComments(progress)
-            // case Task.DeletePhotoTags:
-            //     await deletePhotoTags(progress)
-            // case Task.ExitGroups:
-            //     await exitGroups(progress)
-            // case Task.DeleteVideos:
-            //     await deleteVideos(progress)
-            // case Task.DeleteMusic:
-            //     await deleteMusic(progress)
             case Task.DeleteWall:
                 await deleteWall(progress)
+            case Task.DeleteLikes:
+                await deleteLikes(progress)
+            case Task.DeleteComments:
+                await deleteComments(progress)
+            case Task.DeleteVideos:
+                await deleteVideos(progress)
+            case Task.DeleteMusic:
+                await deleteMusic(progress)
+            case Task.DeletePhotoTags:
+                await deletePhotoTags(progress)
+            case Task.ExitGroups:
+                await exitGroups(progress)
         }
 
         progress.task = Task.Finished
