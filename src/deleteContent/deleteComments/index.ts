@@ -2,11 +2,14 @@ import config from "../../config"
 import { driver } from "../../driverInstance"
 import { CommentsParser } from "../../parsers/CommentsParser/CommentsParser"
 import { Progress } from "../../progress"
+import { Reporter } from "../../Reporter"
 import { Task } from "../../Task"
 import { logger } from "../../utils/logger"
-import { clickElement, findElements, waitActionComplete, waitBrowserClosed } from "../../utils/selenium"
-import { reporter } from "../deleteLikes/reporter"
+import { clickElement, findElements, waitActionComplete } from "../../utils/selenium"
 import { getUserId, openPage } from "../vkHelpers"
+
+
+const reporter = new Reporter(Task.DeleteComments)
 
 export async function deleteComments(progress: Progress) {
     if (progress.task !== Task.DeleteComments) {
@@ -25,7 +28,7 @@ export async function deleteComments(progress: Progress) {
     for (; progress.index < progress.data.length; progress.index++) {
         const url: string = progress.data[progress.index]
 
-        const pageOk = await openPage(url)
+        const pageOk = await openPage(url, reporter)
         if (pageOk) {
             if (userId === null) {
                 userId = await getUserId()

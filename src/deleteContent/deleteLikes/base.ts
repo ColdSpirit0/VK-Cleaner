@@ -1,4 +1,3 @@
-import config from "../../config";
 import { driver } from "../../driverInstance";
 import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
 import { clickElement, findElements, isElementExists, waitActionComplete } from "../../utils/selenium";

@@ -1,8 +1,8 @@
-import config from "../../config";
 import { driver } from "../../driverInstance";
 import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
 import { clickElement, findElement, findElements, scrollToBottom, waitActionComplete, waitForElementDeleted } from "../../utils/selenium";
 import { waitCaptchaSolved } from "../vkHelpers";
+import { reporter } from "./reporter";
 
 export async function deleteLikeWallReply(like: LikeDataItem) {
     // wait for VK scroll
@@ -33,6 +33,8 @@ export async function deleteLikeWallReply(like: LikeDataItem) {
         await waitActionComplete();
         await waitCaptchaSolved();
     }
+
+    await reporter.report(like.url, likeButtons.length || "Лайки не найдены")
 }
 
 async function loadAllCommentsManually() {

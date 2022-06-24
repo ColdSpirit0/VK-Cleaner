@@ -7,8 +7,9 @@ import { Task } from "../../Task";
 import { deleteLikeBase } from "./base";
 import { deleteLikeWallReply } from "./wallReply";
 import { deleteLikePhotoComments, deleteLikeTopicComments, deleteLikeVideoComments } from "./comments";
-import { reporter, manualRemoveReporter } from "./reporter";
+import { reporter } from "./reporter";
 import { openPage } from "../vkHelpers";
+import manualRemoveReporter from "../manualRemoveReporter";
 
 let likesOrder = [
     {type: LikeType.wall, reverse: true},
@@ -46,7 +47,7 @@ export async function deleteLikes(progress: Progress) {
     for (; progress.index < progress.data.length; progress.index++) {
         const like: LikeDataItem = progress.data[progress.index];
 
-        let pageOk = await openPage(like.url)
+        let pageOk = await openPage(like.url, reporter)
 
         if (pageOk) {
             switch (like.type) {

@@ -1,8 +1,10 @@
 import { driver } from "../../driverInstance";
 import { Progress } from "../../progress";
+import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
-import { clickElement, findElement, findElements, hoverElement, isElementExists, scrollToBottom, waitActionComplete, waitBrowserClosed } from "../../utils/selenium";
-import { reporter } from "../deleteLikes/reporter";
+import { clickElement, findElement, hoverElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
+
+const reporter = new Reporter(Task.ExitGroups)
 
 export async function exitGroups(progress: Progress) {
     if (progress.task !== Task.ExitGroups) {
@@ -16,12 +18,12 @@ export async function exitGroups(progress: Progress) {
         await scrollToBottom()
     }
 
-    let leavedCount = 0
-    do {
-        leavedCount++
-    } while (await exitGroup());
+    let leavedGroupsCount = 0
+    while (await exitGroup()) {
+        leavedGroupsCount++
+    }
 
-    await reporter.report("Leaved groups: " + leavedCount)
+    await reporter.report("Покинуто групп:", leavedGroupsCount)
 }
 
 async function exitGroup() {

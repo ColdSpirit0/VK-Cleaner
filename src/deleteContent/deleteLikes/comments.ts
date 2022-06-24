@@ -1,8 +1,5 @@
-import config from "../../config";
-import { driver } from "../../driverInstance";
 import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
-import { logger } from "../../utils/logger";
-import { browserLog, clickElement, findElement, isElementExists, scrollToBottom, waitActionComplete, waitBrowserClosed, waitElementCountChanged } from "../../utils/selenium";
+import { clickElement, findElement, isElementExists, scrollToBottom, waitElementCountChanged } from "../../utils/selenium";
 import { deleteLikesCommon, ensurePageLoaded } from "./base";
 import { reporter } from "./reporter";
 
@@ -33,7 +30,6 @@ export async function deleteLikeVideoComments(like: LikeDataItem) {
     }
 
     let likeElements = await deleteLikesCommon()
-    // await waitBrowserClosed()
     await reporter.report(like.url, likeElements.length || "Лайки не найдены")
 }
 
@@ -51,6 +47,5 @@ export async function deleteLikeTopicComments(like: LikeDataItem) {
 
     // remove likes
     let likeElements = await deleteLikesCommon()
-    // await waitBrowserClosed()
     await reporter.report(like.url, likeElements.length || "Лайки не найдены")
 }

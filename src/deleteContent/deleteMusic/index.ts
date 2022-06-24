@@ -1,8 +1,11 @@
 import { driver } from "../../driverInstance";
 import { Progress } from "../../progress";
+import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
 import { clickElement, findElement, hoverElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
 import { getUserId } from "../vkHelpers";
+
+const reporter = new Reporter(Task.DeleteMusic)
 
 export async function deleteMusic(progress: Progress) {
     if (progress.task !== Task.DeleteMusic) {
@@ -21,8 +24,11 @@ export async function deleteMusic(progress: Progress) {
         } while (await loader.isDisplayed());
     }
 
-
-    while(await deleteTrack()) {}
+    let tracksDeletedCount = 0
+    while(await deleteTrack()) {
+        tracksDeletedCount++
+    }
+    await reporter.report("Удалено треков:", tracksDeletedCount)
 }
 
 async function deleteTrack() {

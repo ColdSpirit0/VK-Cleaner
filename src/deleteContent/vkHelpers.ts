@@ -1,10 +1,9 @@
 import { driver } from "../driverInstance";
-import { LikeDataItem } from "../parsers/LikeParser/LikeDataItem";
+import { Reporter } from "../Reporter";
 import { logger } from "../utils/logger";
 import { findElement, findElements, isElementExists, waitForElement } from "../utils/selenium";
-import { reporter } from "./deleteLikes/reporter";
 
-export async function openPage(url: string) {
+export async function openPage(url: string, reporter: Reporter) {
     // open url 
     logger.log("Opening", url);
     await driver.get(url);

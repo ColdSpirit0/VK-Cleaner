@@ -1,8 +1,11 @@
 import { driver } from "../../driverInstance";
 import { Progress } from "../../progress";
+import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
-import { clickElement, findElement, findElements, hoverElement, injectCSS, scrollToBottom, waitActionComplete } from "../../utils/selenium";
+import { clickElement, findElement, findElements, hoverElement, injectCSS, waitActionComplete } from "../../utils/selenium";
 import { getUserId } from "../vkHelpers";
+
+const reporter = new Reporter(Task.DeleteWall)
 
 export async function deleteWall(progress: Progress) {
     if (progress.task !== Task.DeleteWall) {
@@ -17,7 +20,11 @@ export async function deleteWall(progress: Progress) {
     }
     `)
 
-    while(await deletePost()) {}
+    let deletedPostsCount = 0
+    while(await deletePost()) {
+        deletedPostsCount++
+    }
+    await reporter.report("Удалено постов:", deletedPostsCount)
 }
 
 async function deletePost(): Promise<boolean> {

@@ -1,10 +1,12 @@
 import { Progress } from "../../progress";
 import { Task } from "../../Task";
-import { clickElement, findElement, waitActionComplete, waitBrowserClosed, waitForElement, waitForElements } from "../../utils/selenium";
+import { clickElement, findElement, waitActionComplete, waitForElement } from "../../utils/selenium";
 import lodash from "lodash"
 import { getProfileUrl, getUserId } from "../vkHelpers";
 import { driver } from "../../driverInstance";
-import { reporter } from "../deleteLikes/reporter";
+import { Reporter } from "../../Reporter";
+
+const reporter = new Reporter(Task.DeletePhotoTags)
 
 export async function deletePhotoTags(progress: Progress) {
     if (progress.task !== Task.DeletePhotoTags) {
@@ -17,12 +19,11 @@ export async function deletePhotoTags(progress: Progress) {
 
     let userId = await getUserId()
 
-    let deletedCount = 0
-    do {
-        deletedCount++
-    } while (await deletePhotoTag(userId, profileUrlRelative));
-     
-    await reporter.report("Deleted tags: " + deletedCount)
+    let deletedTagsCount = 0
+    while (await deletePhotoTag(userId, profileUrlRelative)) {
+        deletedTagsCount++
+    } 
+    await reporter.report("Удалено тегов с фото:", deletedTagsCount)
 }
 
 async function deletePhotoTag(userId: number, profileUrlRelative: string): Promise<boolean> {

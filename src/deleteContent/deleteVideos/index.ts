@@ -1,9 +1,12 @@
 import lodash from "lodash";
 import { driver } from "../../driverInstance";
 import { Progress } from "../../progress";
+import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
-import { clickElement, findElement, findElements, hoverElement, scrollToBottom, waitActionComplete, waitBrowserClosed } from "../../utils/selenium";
+import { clickElement, findElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
 import { getProfileUrl } from "../vkHelpers";
+
+const reporter = new Reporter(Task.DeleteVideos)
 
 export async function deleteVideos(progress: Progress) {
     if (progress.task !== Task.DeleteVideos) {
@@ -24,7 +27,11 @@ export async function deleteVideos(progress: Progress) {
     }
 
     // delete each video
-    while(await deleteVideo()){}
+    let deletedVideosCount = 0
+    while(await deleteVideo()) {
+        deletedVideosCount++
+    }
+    await reporter.report("Удалено видео:", deletedVideosCount)
 }
 
 async function deleteVideo() {
