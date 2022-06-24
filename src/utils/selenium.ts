@@ -310,3 +310,12 @@ export async function waitBrowserClosed() {
         }
     }
 }
+
+export async function injectCSS(css: string) {
+    await driver.executeAsyncScript(function (css, resolve) {
+        let styleElement = document.createElement("style")
+        styleElement.innerHTML = css
+        document.head.appendChild(styleElement)
+        resolve()
+    }, css)
+}

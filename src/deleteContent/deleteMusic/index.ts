@@ -14,10 +14,12 @@ export async function deleteMusic(progress: Progress) {
 
     // load all audios
     let loader = await findElement(".CatalogBlock__autoListLoader")
-    do {
-        await scrollToBottom()
-        await driver.sleep(300)
-    } while (await loader.isDisplayed());
+    if (loader !== null) {
+        do {
+            await scrollToBottom()
+            await driver.sleep(300)
+        } while (await loader.isDisplayed());
+    }
 
 
     while(await deleteTrack()) {}

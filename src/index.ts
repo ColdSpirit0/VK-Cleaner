@@ -38,10 +38,10 @@ async function main() {
             //     await exitGroups(progress)
             // case Task.DeleteVideos:
             //     await deleteVideos(progress)
-            case Task.DeleteMusic:
-                await deleteMusic(progress)
-            // case Task.DeleteWall:
-            //     await deleteWall(progress)
+            // case Task.DeleteMusic:
+            //     await deleteMusic(progress)
+            case Task.DeleteWall:
+                await deleteWall(progress)
         }
 
         progress.task = Task.Finished
