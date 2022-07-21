@@ -44,8 +44,8 @@ export async function waitCaptchaSolved() {
         wasCaptcha = await waitCaptchaWindow()
 
         if (wasCaptcha) {
-            // wait 1 second and check again
-            await driver.sleep(1000)
+            // wait 3 second and check again
+            await driver.sleep(3000)
             // next loop
         }
         else {
@@ -59,7 +59,7 @@ export async function waitCaptchaSolved() {
 }
 
 // check captcha for one window
-export async function waitCaptchaWindow() {
+async function waitCaptchaWindow() {
     let captchaExists = true;
     let captchaExisted = false;
 

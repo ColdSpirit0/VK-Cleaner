@@ -29,6 +29,10 @@ export async function deleteLikesCommon() {
     let selector = `(//*[class("like_btn") and @title="Нравится"]//self::*[class("active")] | //*[class("PostButtonReactions--active")]/parent::*)`;
     let likeButtons = await findElements(selector, { now: true });
 
+    if (likeButtons.length > 0) {
+        await waitCaptchaSolved()
+    }
+
     for (const button of likeButtons) {
         await clickElement(button);
         await waitActionComplete();

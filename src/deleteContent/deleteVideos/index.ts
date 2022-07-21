@@ -22,7 +22,7 @@ export async function deleteVideos(progress: Progress) {
 
     // load all videos
     let loadMoreElement = await findElement("#ui_all_load_more")
-    while(await loadMoreElement.isDisplayed()) {
+    while(loadMoreElement !== null && await loadMoreElement.isDisplayed()) {
         await scrollToBottom()
     }
 
