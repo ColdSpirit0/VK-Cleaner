@@ -7,8 +7,8 @@
     "temp": "npx ts-node src/temp.ts",
     "test": "npx mocha --require ts-node/register --timeout 10000 --require mocha-steps tests/**/*.test.ts"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "ColdSpirit (https://github.com/ColdSpirit0)",
+  "license": "AGPL-3.0",
   "devDependencies": {
     "@types/cli-progress": "^3.9.2",
     "@types/download": "^8.0.1",
