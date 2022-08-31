@@ -37,7 +37,7 @@
 
 ## Как пользоваться
 
-### Требования к проекту:
+### Требования для запуска:
 
 * Должен быть установлен [Node.js](https://nodejs.org/en/download/)
 
@@ -71,9 +71,4 @@
 
 ## Поддержка
 
-Если проект вам помог, то вы можете поддержать автора различными способами:
-
-* BTC: `bc1qkxh5vy20zywnn87psrlv8muh9cfdx0zpk80kjw`
-* ETH: `0x7CE63bE09c3263fc09543238BC5a70FC5CD3007e`
-* Boosty: https://boosty.to/coldspirit
-
+Если проект вам помог, то вы можете [поддержать автора](https://github.com/ColdSpirit0/ColdSpirit0/blob/main/donate.md).
