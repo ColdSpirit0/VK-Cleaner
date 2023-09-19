@@ -41,11 +41,15 @@
 
 * Должен быть установлен [Node.js](https://nodejs.org/en/download/)
 
-* В проекте используется архив данных вк - запросить его можно [тут](https://vk.com/data_protection?section=rules&scroll_to_archive=1), рекомендуется поставить все галочки. На сбор данных может уйти несколько дней, поэтому следует позаботиться об этом заранее.
+* В проекте используется архив данных ВК - запросить его можно [тут](https://vk.com/data_protection?section=rules&scroll_to_archive=1), рекомендуется поставить все галочки. На сбор данных может уйти несколько дней, поэтому следует позаботиться об этом заранее.
 
 * Установить браузер [Chrome](https://www.google.com/chrome/). Желательно отключить браузеру автоматические обновления на время удаления данных.
 
-* Скачать [Selenium Chrome Driver](https://www.selenium.dev/documentation/webdriver/getting_started/install_drivers/) для вашей версии хрома. Распаковать его в директорию, допустим `C://SeleniumDrivers`. Добавить директорию в PATH ([видео](https://www.youtube.com/watch?v=mqIgUbpSz_A)).
+* Windows: Скачать [Selenium Chrome Driver](https://www.selenium.dev/documentation/webdriver/getting_started/install_drivers/) для вашей версии хрома. Распаковать его в директорию, допустим `C://SeleniumDrivers`. Добавить директорию в PATH ([видео](https://www.youtube.com/watch?v=mqIgUbpSz_A)).
+* Linux: установить google-chrome через ваш пакетный менеджер. В файл .bashrc / .zshrc / .fishrc добавить сторочку
+  `export PATH=$PATH:/usr/bin - для стандартного пакета Chrome (.deb, .rpm, AUR)`
+  `export PATH=$PATH:/var/lib/flatpak/exports/bin - для Flatpak пакета`
+  `export PATH=$PATH:/snap/bin - для Snap пакета`
 
 
 ### Порядок действий:
@@ -54,9 +58,10 @@
 
 1. Выполнить `npm install` в терминале, в директории проекта
 
-1. Скопировать файл `.env.template` в `.env`
+1. Переименовать файл `.env.template` в `.env`
 
 1. Ввести свои логин и пароль в файле `.env` (вход только по номеру телефона на данный момент не реализован)
+   * Для Linux следует открыть Chrome и залогиниться вручную.
 
 1. Скопировать распакованный архив данных в директорию проекта. Полный путь к файлу `index.html` из архива должен выглядеть так: `<путь_к_проекту>/Archive/index.html`
 
