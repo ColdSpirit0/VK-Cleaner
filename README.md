@@ -78,7 +78,7 @@
 
 Чтобы ускорить процесс удаления лайков / комменатриев скачайте расширение [uBlock origin](https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm), зайдите в настройки и во вкладке My Filters / Мои фильтры импортируйте файл my-ublock-static-filters.txt из папки ublock. После этих действий страница VK будет представлять из себя только пост без интерфейса, картинки и комментариев. Такая страница будет загружаться намного быстрее.
 
-![Image](ublock/screenshot.png)
+![Image](ublock/Screenshot.png)
 
 
 ## Поддержка
