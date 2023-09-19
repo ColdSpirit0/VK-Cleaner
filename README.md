@@ -48,11 +48,11 @@
 * Windows: Скачать [Selenium Chrome Driver](https://www.selenium.dev/documentation/webdriver/getting_started/install_drivers/) для вашей версии хрома. Распаковать его в директорию, допустим `C://SeleniumDrivers`. Добавить директорию в PATH ([видео](https://www.youtube.com/watch?v=mqIgUbpSz_A)).
 * Linux: установить google-chrome через ваш пакетный менеджер. В файл `.bashrc` / `.zshrc` / `.fishrc` добавить сторочку:
   
-  `export PATH=$PATH:/usr/bin - для стандартного пакета Chrome (.deb, .rpm, AUR)`
+  `export PATH=$PATH:/usr/bin` - для стандартного пакета Chrome (.deb, .rpm, AUR)
   
-  `export PATH=$PATH:/var/lib/flatpak/exports/bin - для Flatpak пакета`
+  `export PATH=$PATH:/var/lib/flatpak/exports/bin` - для Flatpak пакета
   
-  `export PATH=$PATH:/snap/bin - для Snap пакета`
+  `export PATH=$PATH:/snap/bin` - для Snap пакета
 
 
 ### Порядок действий:
