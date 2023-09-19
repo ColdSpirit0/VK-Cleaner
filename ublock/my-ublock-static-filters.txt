@@ -1,0 +1,11 @@
+vk.com##.LeftMenuOld-module__container--tHFVR
+vk.com##.page_header_wrap
+vk.com##.page_header_cont
+vk.com##.left_menu_nav_wrap
+vk.com##.narrow_column
+vk.com##.submit_post_box_with_sitposting.submit_post_box_with_best_friends._submit_post_box.clear_fix.submit_post_box
+vk.com##.feed_section_podcasts._ui_item_podcasts._ui_rmenu_subitem.ui_rmenu_subitem
+vk.com##.stories_feed_items_wrap
+vk.com##.clear_fix.stories_feed_title
+vk.com##._post_content > .post_content > .post_info > .wall_text
+vk.com##._post_content > .post_content > .post_info > .replies > .replies_wrap
