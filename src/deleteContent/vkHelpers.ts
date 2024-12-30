@@ -26,7 +26,7 @@ export async function openPage(url: string, reporter: Reporter) {
     await waitForElement(`#content`);
 
     // report if access error
-    if (await isElementExists(`//*[class("message_page_title") and normalize-space(text())="Ошибка"]`, { now: true })) {
+    if (await isElementExists(`//*[class("message_page_title") and normalize-space(text())="Ошибка"] | //div[contains(@class, 'HiddenPostBlank')] | //div[@data-testid="placeholder_description"]`)) {
         await reporter.report(url, "Ошибка");
         return false;
     }
