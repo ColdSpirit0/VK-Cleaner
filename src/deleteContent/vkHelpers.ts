@@ -64,7 +64,7 @@ async function waitCaptchaWindow() {
     let captchaExisted = false;
 
     while (captchaExists) {
-        let captchas = await findElements(`.captcha`, { now: true });
+		let captchas = await findElements(`//div[@data-testid="modalbox"]`, { now: true });
 
         if (captchas.length > 0) {
             captchaExisted = true;

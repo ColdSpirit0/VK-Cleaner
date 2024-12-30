@@ -26,8 +26,8 @@ export async function deleteLikeBase(like: LikeDataItem) {
 }
 
 export async function deleteLikesCommon() {
-    let selector = `(//*[class("like_btn") and @title="Нравится"]//self::*[class("active")] | //*[class("PostButtonReactions--active")]/parent::*)`;
-    let likeButtons = await findElements(selector, { now: true });
+    let selector = `//div[contains(@class, 'PostButtonReactions--active')] | //a[contains(@class, 'like_btn') and contains(@class, '_like') and contains(@class, 'active')] | //*[contains(@class, 'vkuiIcon--like_24') and contains(@class, 'vkitgetColorClass__colorAccentRed--JtojA')] | //*[contains(@class, 'vkuiIcon--like_circle_fill_red_28')]`;
+    let likeButtons = await findElements(selector);
 
     if (likeButtons.length > 0) {
         await waitCaptchaSolved()
@@ -42,7 +42,7 @@ export async function deleteLikesCommon() {
 }
 
 export async function ensurePageLoaded() {
-    while (!await isElementExists(`//*[@id="pv_photo" or class("VideoLayerInfo") or class("post")]`)) {
+    while (!await isElementExists(`//*[@id="pv_photo" or @id="react_rootVideo_page" or @id="mv_player_box" or class("post")]`)) {
         await driver.navigate().refresh();
     }
 }

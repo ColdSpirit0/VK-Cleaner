@@ -25,7 +25,7 @@ export async function deleteLikeWallReply(like: LikeDataItem) {
     //     await driver.sleep(config.actionCompleteTimeout)
     // }
     // get all like buttons and click
-    let selector = `(//*[class("like_btn") and @title="Нравится"]//self::*[class("active")] | //*[class("PostButtonReactions--active")]/parent::*)`;
+    let selector = `//a[contains(@class, 'like_btn') and contains(@class, '_like') and contains(@class, 'active')]`;
     let likeButtons = await findElements(selector, { now: true });
 
     for (const button of likeButtons) {
