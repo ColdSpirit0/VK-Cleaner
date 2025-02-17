@@ -4,7 +4,7 @@ import { CommentsParser } from "../../parsers/CommentsParser/CommentsParser"
 import { Progress } from "../../progress"
 import { Reporter } from "../../Reporter"
 import { Task } from "../../Task"
-import { logger } from "../../utils/logger"
+import { logger } from "../../utils/Logger"
 import { clickElement, findElements, waitActionComplete } from "../../utils/selenium"
 import { getUserId, openPage } from "../vkHelpers"
 

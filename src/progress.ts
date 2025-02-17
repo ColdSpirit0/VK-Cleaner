@@ -3,7 +3,7 @@ import config from "./config";
 import fs from "fs";
 import { isExists } from "./utils/fs";
 import path from "path";
-import { logger } from "./utils/logger";
+import { logger } from "./utils/Logger";
 
 
 // TODO: Make a class

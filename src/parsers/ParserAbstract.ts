@@ -1,5 +1,5 @@
 import path from "path"
-import { Logger } from "../utils/logger"
+import { Logger } from "../utils/Logger"
 
 export abstract class ParserAbstract {
     abstract targetDirectory: string

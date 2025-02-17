@@ -1,6 +1,6 @@
 import { driver } from "../driverInstance";
 import { Reporter } from "../Reporter";
-import { logger } from "../utils/logger";
+import { logger } from "../utils/Logger";
 import { findElement, findElements, isElementExists, waitForElement } from "../utils/selenium";
 
 export async function openPage(url: string, reporter: Reporter) {

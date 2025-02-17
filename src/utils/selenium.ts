@@ -2,7 +2,7 @@ import { By, Locator, until, WebDriver, WebElement } from "selenium-webdriver"
 import { driver } from "../driverInstance"
 import config from "../config"
 import { isString, isWebElement } from "./typeCheckers"
-import { logger } from "./logger"
+import { logger } from "./Logger"
 import { Command } from "selenium-webdriver/lib/command"
 
 /*

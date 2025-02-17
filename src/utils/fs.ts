@@ -1,6 +1,6 @@
 import fs from "fs";
 import nodePath from "path";
-import { logger } from "./logger";
+import { logger } from "./Logger";
 
 export async function isExists(path: string): Promise<boolean> {
     try {

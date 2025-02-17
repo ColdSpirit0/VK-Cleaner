@@ -1,6 +1,6 @@
 import config from "./config";
 import { driver } from "./driverInstance";
-import { logger } from "./utils/logger";
+import { logger } from "./utils/Logger";
 import { clickElement, isElementExists, waitForElement } from "./utils/selenium";
 
 export async function loginVK() {
