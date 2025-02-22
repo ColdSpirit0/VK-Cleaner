@@ -12,9 +12,9 @@ import { openPage } from "../vkHelpers";
 import manualRemoveReporter from "../manualRemoveReporter";
 
 let likesOrder = [
-    {type: LikeType.wall, reverse: true},
+    {type: LikeType.wall, reverse: false},
     {type: LikeType.wall_reply, reverse: false},
-    {type: LikeType.photo, reverse: false},
+    {type: LikeType.photo, reverse: true},
     {type: LikeType.photo_comment, reverse: false},
     {type: LikeType.video, reverse: false},
     {type: LikeType.video_comment, reverse: false},
