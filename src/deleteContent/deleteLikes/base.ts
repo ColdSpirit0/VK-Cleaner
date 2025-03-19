@@ -28,17 +28,22 @@ export async function deleteLikeBase(like: LikeDataItem) {
 export async function deleteLikesCommon() {
     // LikeType                                         XPath selector                                                                                             Class name fullness
     //
-    // LikeType.wall                                    //div[class("PostButtonReactions--active")]                                                                Full
-    // LikeType.wall_reply                              //a[class("like_btn") and class("_like") and class("active")]                                              Full
-    // LikeType.photo                                   //a[class("like_btn") and class("_like") and class("active")]                                              Full
-    // LikeType.photo_comment                           //a[class("like_btn") and class("_like") and class("active")]                                              Full
+    // LikeType.wall                                    //*[class("PostButtonReactions--active")]                                                                Full
+    // LikeType.wall_reply                              //*[class("like_btn") and class("_like") and class("active")]                                              Full
+    // LikeType.photo                                   //*[class("like_btn") and class("_like") and class("active")]                                              Full
+    // LikeType.photo_comment                           //*[class("like_btn") and class("_like") and class("active")]                                              Full
     // LikeType.video                                   //*[class("vkuiIcon--like_24") and contains(concat(" ", @class), " vkitgetColorClass__colorAccentRed")]    Full and only beginning (w/o hash in end) respectively
-    // LikeType.video_comment                           //a[class("like_btn") and class("_like") and class("active")]                                              Full
+    // LikeType.video_comment                           //*[class("like_btn") and class("_like") and class("active")]                                              Full
     // LikeType.topic_comment                           ?                                                                                                          ?
     
     // Hard to reproduce:
     // ? (LikeType.video in old video player, maybe)    //*[contains(@class, 'vkuiIcon--like_circle_fill_red_28')]                                                 ?
-    let selector = `//div[class("PostButtonReactions--active")] | //a[class("like_btn") and class("_like") and class("active")] | //*[class("vkuiIcon--like_24") and contains(concat(" ", @class), " vkitgetColorClass__colorAccentRed")] | //*[contains(@class, 'vkuiIcon--like_circle_fill_red_28')]`;
+    let selector = `
+        //*[class("PostButtonReactions--active")] |
+        //*[class("like_btn") and class("_like") and class("active")] |
+        //*[class("vkuiIcon--like_24") and contains(concat(" ", @class), " vkitgetColorClass__colorAccentRed")] |
+        //*[contains(@class, 'vkuiIcon--like_circle_fill_red_28')]`;
+
     let likeButtons = await findElements(selector);
 
     if (likeButtons.length > 0) {

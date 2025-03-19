@@ -26,7 +26,11 @@ export async function openPage(url: string, reporter: Reporter) {
     await waitForElement(`#content`);
 
     // report if access error
-    if (await isElementExists(`//*[class("message_page_title") and normalize-space(text())="Ошибка"] | //div[contains(@class, 'HiddenPostBlank')] | //div[@data-testid="placeholder_description"]`)) {
+    let s = `
+        //*[class("message_page_title") and normalize-space(text())="Ошибка"] |
+        //*[contains(@class, 'HiddenPostBlank')] |
+        //*[@data-testid="placeholder_description"]`
+    if (await isElementExists(s)) {
         await reporter.report(url, "Ошибка");
         return false;
     }
@@ -64,7 +68,7 @@ async function waitCaptchaWindow() {
     let captchaExisted = false;
 
     while (captchaExists) {
-        let captchas = await findElements(`//div[@data-testid="modalbox"]`, { now: true });
+        let captchas = await findElements(`//*[@data-testid="modalbox"]`, { now: true });
 
         if (captchas.length > 0) {
             captchaExisted = true;
