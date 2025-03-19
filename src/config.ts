@@ -15,8 +15,6 @@ let config = {
 
     // vk
     archivePath: "./Archive",
-    login: process.env.VK_LOGIN,
-    pass: process.env.VK_PASS,
     cookiesPath: "./vk.cookies",
 
     // selenium
