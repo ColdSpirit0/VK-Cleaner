@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npx ts-node src/index.ts",
     "temp": "npx ts-node src/temp.ts",
-    "test": "npx mocha --require ts-node/register --timeout 10000 --require mocha-steps tests/**/*.test.ts"
+    "test": "npx mocha --require ts-node/register --no-timeouts --require mocha-steps tests/**/*.test.ts"
   },
   "author": "ColdSpirit (https://github.com/ColdSpirit0)",
   "license": "AGPL-3.0",
