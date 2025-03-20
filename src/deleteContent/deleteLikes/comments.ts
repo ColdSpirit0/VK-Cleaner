@@ -21,14 +21,6 @@ export async function deleteLikePhotoComments(like: LikeDataItem) {
 export async function deleteLikeVideoComments(like: LikeDataItem) {
     await ensurePageLoaded()
 
-    // unwrap all comments
-    const loadCommentsButtonSelector = `//*[@id="mv_comments_header" and starts-with(text(), "Показать ")]`
-    let button = await findElement(loadCommentsButtonSelector, {now: false, waitTime: 10000, safe: true})
-    while( ! await isElementExists(`#mv_comments_header.mv_comments_expanded`, {now: true})) {
-        await clickElement(button, {now: true})
-        // await waitActionComplete()
-    }
-
     let likeElements = await deleteLikesCommon()
     await reporter.report(like.url, likeElements.length || "Лайки не найдены")
 }

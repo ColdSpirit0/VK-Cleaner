@@ -11,29 +11,40 @@ import { reporter } from "./reporter";
 import { openPage } from "../vkHelpers";
 import manualRemoveReporter from "../manualRemoveReporter";
 
-let likesOrder = [
-    {type: LikeType.wall, reverse: false},
-    {type: LikeType.wall_reply, reverse: false},
-    {type: LikeType.photo, reverse: true},
-    {type: LikeType.photo_comment, reverse: false},
-    {type: LikeType.video, reverse: false},
-    {type: LikeType.video_comment, reverse: false},
-    {type: LikeType.topic_comment, reverse: false},
+const customLikes: LikeDataItem[] = [
+    // you can setup test data here:
+    //{url: "http://vk.com/...", type: LikeType....}
 ]
+
+let likesOrder = [
+    { type: LikeType.wall, reverse: false },
+    { type: LikeType.wall_reply, reverse: false },
+    { type: LikeType.photo, reverse: true },
+    { type: LikeType.photo_comment, reverse: false },
+    { type: LikeType.video, reverse: false },
+    { type: LikeType.video_comment, reverse: false },
+    { type: LikeType.topic_comment, reverse: false },
+]
+
+async function getParserData() {
+    if (customLikes.length > 0) return customLikes
+
+    let likesParser = new LikesParser();
+    likesParser.init(config.archivePath);
+    return await likesParser.parse();
+}
 
 export async function deleteLikes(progress: Progress) {
     if (progress.task !== Task.DeleteLikes) {
         progress.task = Task.DeleteLikes
 
         // get data from parser
-        let likesParser = new LikesParser();
-        likesParser.init(config.archivePath);
-        let likesDataRaw = await likesParser.parse();
+        let likesDataRaw = await getParserData();
 
         let likesData = []
         for (const orderItem of likesOrder) {
             let likesTyped = likesDataRaw.filter(a => a.type === orderItem.type)
-            
+
             if (orderItem.reverse) {
                 likesTyped.reverse()
             }
@@ -48,35 +59,37 @@ export async function deleteLikes(progress: Progress) {
         const like: LikeDataItem = progress.data[progress.index];
 
         let pageOk = await openPage(like.url, reporter)
+        if (!pageOk) {
+            await deleteLikeManual(like)
+            continue
+        }
 
-        if (pageOk) {
-            switch (like.type) {
-                case LikeType.wall:
-                case LikeType.video:
-                case LikeType.photo:
-                    await deleteLikeBase(like)
-                    break
-            
-                case LikeType.wall_reply:
-                    await deleteLikeWallReply(like)
-                    break
-                
-                case LikeType.photo_comment:
-                    await deleteLikePhotoComments(like)
-                    break
-                
-                case LikeType.video_comment:
-                    await deleteLikeVideoComments(like)
-                    break
+        switch (like.type) {
+            case LikeType.wall:
+            case LikeType.video:
+            case LikeType.photo:
+                await deleteLikeBase(like)
+                break
 
-                case LikeType.topic_comment:
-                    await deleteLikeTopicComments(like)
-                    break
+            case LikeType.wall_reply:
+                await deleteLikeWallReply(like)
+                break
 
-                default:
-                    await deleteLikeManual(like)
-                    break
-            }
+            case LikeType.photo_comment:
+                await deleteLikePhotoComments(like)
+                break
+
+            case LikeType.video_comment:
+                await deleteLikeVideoComments(like)
+                break
+
+            case LikeType.topic_comment:
+                await deleteLikeTopicComments(like)
+                break
+
+            default:
+                await deleteLikeManual(like)
+                break
         }
     }
 }

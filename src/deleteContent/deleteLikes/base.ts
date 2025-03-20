@@ -4,20 +4,28 @@ import { clickElement, findElements, isElementExists, waitActionComplete } from 
 import { waitCaptchaSolved } from "../vkHelpers";
 import { reporter } from "./reporter";
 
-// removes like of types: photo, video, wall
+const o = {
+    locators: {
+        // locators to check that page is loaded
+        pageWall: `//*[class("post")]`,
+        pagePhoto: `//*[@id="pv_photo"]`,
+        pageVideo: `//*[@id="react_rootVideo_page" or @id="mv_player_box"]`,
+
+        // locators for like button
+        likeWall: `//*[class("PostButtonReactions--active")]`,
+        likePhoto: `//*[class("like_btn") and class("active")]`, // selector is same for: wall_reply, photo_comment, video_comment (old)
+        likeVideo: `//*[@data-testid="video_modal_like_button"
+                    and descendant-or-self::*[contains(concat(" ", @class), " vkitgetColorClass__colorAccentRed")]]`,
+        likeVideo_old: `//*[contains(@class, 'vkuiIcon--like_circle_fill_red_28')]`, // Hard to reproduce: (LikeType.video in old video player, maybe)
+        likeVideoComment: `//*[@data-testid="comment-liked"]`,
+    }
+}
+
 export async function deleteLikeBase(like: LikeDataItem) {
     // to be sure photo/video/other is visible
     // reload page if not
-    // await waitForElement(`#pv_photo`)
     await ensurePageLoaded();
 
-    /*
-        photo like and comments
-            `//*[class("like_btn") and @title="Нравится"]//self::*[class("active")]`
-        post like
-            `//*[class("PostButtonReactions--active")]`
-        combined ^
-    */
     let likeButtons = await deleteLikesCommon();
 
     // report how much removed likes
@@ -26,23 +34,13 @@ export async function deleteLikeBase(like: LikeDataItem) {
 }
 
 export async function deleteLikesCommon() {
-    // LikeType                                         XPath selector                                                                                             Class name fullness
-    //
-    // LikeType.wall                                    //*[class("PostButtonReactions--active")]                                                                Full
-    // LikeType.wall_reply                              //*[class("like_btn") and class("_like") and class("active")]                                              Full
-    // LikeType.photo                                   //*[class("like_btn") and class("_like") and class("active")]                                              Full
-    // LikeType.photo_comment                           //*[class("like_btn") and class("_like") and class("active")]                                              Full
-    // LikeType.video                                   //*[class("vkuiIcon--like_24") and contains(concat(" ", @class), " vkitgetColorClass__colorAccentRed")]    Full and only beginning (w/o hash in end) respectively
-    // LikeType.video_comment                           //*[class("like_btn") and class("_like") and class("active")]                                              Full
-    // LikeType.topic_comment                           ?                                                                                                          ?
-    
-    // Hard to reproduce:
-    // ? (LikeType.video in old video player, maybe)    //*[contains(@class, 'vkuiIcon--like_circle_fill_red_28')]                                                 ?
-    let selector = `
-        //*[class("PostButtonReactions--active")] |
-        //*[class("like_btn") and class("_like") and class("active")] |
-        //*[class("vkuiIcon--like_24") and contains(concat(" ", @class), " vkitgetColorClass__colorAccentRed")] |
-        //*[contains(@class, 'vkuiIcon--like_circle_fill_red_28')]`;
+    let selector = [
+        o.locators.likeWall,
+        o.locators.likePhoto,
+        o.locators.likeVideo,
+        o.locators.likeVideo_old,
+        o.locators.likeVideoComment,
+    ].join(" | ")
 
     let likeButtons = await findElements(selector);
 
@@ -59,7 +57,13 @@ export async function deleteLikesCommon() {
 }
 
 export async function ensurePageLoaded() {
-    while (!await isElementExists(`//*[@id="pv_photo" or @id="react_rootVideo_page" or @id="mv_player_box" or class("post")]`)) {
+    const locator = [
+        o.locators.pageWall,
+        o.locators.pagePhoto,
+        o.locators.pageVideo,
+    ].join(" | ")
+
+    while (!await isElementExists(locator)) {
         await driver.navigate().refresh();
     }
 }
