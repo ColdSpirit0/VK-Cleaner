@@ -30,7 +30,7 @@ export async function deleteWall(progress: Progress) {
 async function deletePost(): Promise<boolean> {
     const visiblePostSelector = `//*[class("post") and not(descendant::*[class("dld") and not(contains(@style, "display: none"))])]`
     const postActionsSelector = visiblePostSelector + `//*[class("PostHeaderActions")]`
-    const deleteButtonSelector = postActionsSelector + `//*[class("ui_actions_menu_item") and normalize-space(text())="Удалить запись"]`
+    const deleteButtonSelector = `[data-testid="post_context_menu_item_delete"]`
     const loadMoreButtonSelector = `#fw_load_more`
 
     let posts = await findElements(visiblePostSelector)
