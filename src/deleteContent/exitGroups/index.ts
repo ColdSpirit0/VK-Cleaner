@@ -4,6 +4,20 @@ import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
 import { clickElement, findElement, hoverElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
 
+const o = {
+    groupsURL: `https://vk.com/groups/my_all_groups`,
+
+    locators: {
+        loadMore: `#spa_root .vkuiSpinner__host`,
+        actionsButton: `//*[@data-testid="desktop_group_item_button" and not(descendant-or-self::*[
+            normalize-space(text())="Подписаться"
+            or normalize-space(text())="Подать заявку"
+        ])]`,
+        actionUnsubscribe: `//*[@data-testid="dropdownactionsheet-item" and descendant-or-self::*[normalize-space(text())="Отписаться"]]`,
+        warningModalUnsubscribe: `//*[@id="box_layer"]//*[class("FlatButton") and descendant-or-self::*[normalize-space(text())="Отписаться"]]`,
+    }
+}
+
 const reporter = new Reporter(Task.ExitGroups)
 
 export async function exitGroups(progress: Progress) {
@@ -11,11 +25,11 @@ export async function exitGroups(progress: Progress) {
         progress.task = Task.ExitGroups
     }
 
-    await driver.get("https://vk.com/groups")
+    await driver.get(o.groupsURL)
 
-    let loadMoreGroupsElement = await findElement("#ui_groups_load_more")
-    while (await loadMoreGroupsElement.isDisplayed()) {
+    while (await findElement(o.locators.loadMore)) {
         await scrollToBottom()
+        await waitActionComplete()
     }
 
     let leavedGroupsCount = 0
@@ -27,24 +41,18 @@ export async function exitGroups(progress: Progress) {
 }
 
 async function exitGroup() {
-    let actionsButton = await hoverElement("#groups_list_groups .group_list_row:not(.deleted) .group_row_actions")
+    let actionsButton = await hoverElement(o.locators.actionsButton)
     if (actionsButton === null) {
         return false
     }
 
-    await clickElement(
-        `//*[class("groups_actions_menu") and class("shown")]`
-        + `//*[class("ui_actions_menu_item") and normalize-space(text())="Отписаться"]`, 
-        {safe: false}
-    )
+    await clickElement(o.locators.actionUnsubscribe, { safe: false })
 
     // click exit if warning shown
-    await clickElement(`//*[class("box_layout")]//button[descendant-or-self::*[normalize-space(text())="Выйти из группы"]]`, {
-        waitTime: 500
-    })
+    await clickElement(o.locators.warningModalUnsubscribe, { waitTime: 500 })
 
     // mouse out
-    await hoverElement("#groups_list_groups .group_list_row:not(.deleted) .group_row_photo", {now: true, safe: false})
+    // await hoverElement("#groups_list_groups .group_list_row:not(.deleted) .group_row_photo", { now: true, safe: false })
 
     await waitActionComplete()
 
