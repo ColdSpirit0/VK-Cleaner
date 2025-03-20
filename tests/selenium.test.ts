@@ -5,11 +5,9 @@ import path from "path";
 
 
 describe("_", function () {
-    let page1Path = null
     this.beforeAll(async function () {
         await initDriver()
-        page1Path = path.resolve("./tests/page1.html")
-        await driver.get(page1Path)
+        await driver.get("file://" + path.resolve("./tests/page1.html"))
     })
 
     this.afterAll(async function () {
