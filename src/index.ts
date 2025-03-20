@@ -56,10 +56,5 @@ async function main() {
     if (config.saveProgress) {
         await saveProgress(progress)
     }
-
-    // wait for browser closed manually
-    if (config.dontCloseBrowser) {
-        await waitBrowserClosed()
-    }
 }
 

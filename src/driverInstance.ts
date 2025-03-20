@@ -25,6 +25,10 @@ export async function initDriver() {
             "start-maximized",
         )
     }
+    
+    if (config.dontCloseBrowser) {
+        options.addArguments("detach")
+    }
 
     options.excludeSwitches("enable-logging")
     options.windowSize({ width: 1200, height: 1000 })
