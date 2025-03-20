@@ -5,6 +5,11 @@ import { isString, isWebElement } from "./typeCheckers"
 import { logger } from "./Logger"
 import { Command } from "selenium-webdriver/lib/command"
 
+
+function debuglog(...args: any[]) {
+    if (config.debug) console.log(...args)
+}
+
 /*
 
 ACTIONS (splitted by function)
@@ -47,6 +52,8 @@ const defaultOptions: UserActionOptions = {
 }
 
 export async function clickElement(elementData: ActionQueryType, options?: UserActionOptions) {
+    debuglog("CLICK_ELEMENT", elementData, options)
+
     options = normalizeOptions(options)
     let element = await getElement(elementData, options)
 
@@ -69,8 +76,10 @@ export async function clickElement(elementData: ActionQueryType, options?: UserA
 
 
 export async function waitElementCountChanged(query: QueryType, options?: UserActionWaitOptions): Promise<CountChangeInfo> {
+    debuglog("WAIT_ELEMENT_COUNT_CHANGED", query, options)
+
     options = normalizeOptions(options)
-    const findOptions: UserActionOptions = {safe: options.safe, now: true}
+    const findOptions: UserActionOptions = { safe: options.safe, now: true }
 
     let initialCount: number = -1
     let currentCount: number = -1
@@ -78,7 +87,7 @@ export async function waitElementCountChanged(query: QueryType, options?: UserAc
     try {
         initialCount = (await findElements(query, findOptions)).length
 
-         await driver.wait(async function () {
+        await driver.wait(async function() {
             currentCount = (await findElements(query, findOptions)).length
             return initialCount !== currentCount
         }, options.waitTime)
@@ -86,31 +95,35 @@ export async function waitElementCountChanged(query: QueryType, options?: UserAc
     } catch (error) {
         if (options.safe) {
             logger.log("NOT changed")
-            return {changed: false, from: initialCount, to: currentCount}
+            return { changed: false, from: initialCount, to: currentCount }
         }
         else {
             throw error
         }
     }
 
-    return {changed: true, from: initialCount, to: currentCount}
+    return { changed: true, from: initialCount, to: currentCount }
 }
 
 
 // not tested
 export async function hoverElement(elementData: ActionQueryType, options?: UserActionOptions) {
+    debuglog("HOVER_ELEMENT", elementData, options)
+
     options = normalizeOptions(options)
     let element = await getElement(elementData, options)
 
     if (element !== null) {
         await scrollToElement(element)
-        await driver.actions().move({x: 0, y: 0, origin: element}).perform()
+        await driver.actions().move({ x: 0, y: 0, origin: element }).perform()
     }
 
     return element
 }
 
 export async function findElement(query: QueryType, options?: UserActionOptions): Promise<WebElement> {
+    debuglog("FIND_ELEMENT", query, options)
+
     let locator: Locator = getLocator(query)
     options = normalizeOptions(options)
 
@@ -132,6 +145,8 @@ export async function findElement(query: QueryType, options?: UserActionOptions)
 }
 
 export async function findElements(query: QueryType, options?: UserActionOptions): Promise<WebElement[]> {
+    debuglog("FIND_ELEMENTS", query, options)
+
     let locator: Locator = getLocator(query)
     options = normalizeOptions(options)
 
@@ -153,6 +168,8 @@ export async function findElements(query: QueryType, options?: UserActionOptions
 }
 
 export async function waitForElement(query: QueryType, options?: UserActionWaitOptions) {
+    debuglog("WAIT_ELEMENT", query, options)
+
     // same as find element but now:false by default
     let optionsNorm = normalizeOptions(options)
     // optionsNorm.now = false
@@ -174,6 +191,8 @@ export async function waitForElementHidden(elementData: ActionQueryType, options
 }
 
 export async function waitForElementDeleted(elementData: ActionQueryType, options?: UserActionWaitOptions) {
+    debuglog("WAIT_ELEMENT_DELETED", elementData, options)
+
     options = normalizeOptions(options)
     let element = await getElement(elementData, options)
 
@@ -193,6 +212,8 @@ export async function waitForElementDeleted(elementData: ActionQueryType, option
 }
 
 export async function waitForElements(query: QueryType, options?: UserActionWaitOptions) {
+    debuglog("WAIT_ELEMENTS", query, options)
+
     // same as find elements but now:false by default
     let optionsNorm = normalizeOptions(options)
     // optionsNorm.now = false
@@ -200,6 +221,8 @@ export async function waitForElements(query: QueryType, options?: UserActionWait
 }
 
 export async function isElementExists(query: QueryType, options?: UserActionSafeOptions) {
+    debuglog("IS_ELEMENT_EXISTS", query, options)
+
     let locator = getLocator(query)
     options = normalizeOptions(options)
 
@@ -208,13 +231,15 @@ export async function isElementExists(query: QueryType, options?: UserActionSafe
 }
 
 export async function scrollToElement(elementData: ActionQueryType, options?: UserActionOptions) {
+    debuglog("SCROLL_TO_ELEMENT", elementData, options)
+
     options = normalizeOptions(options)
     let element = await getElement(elementData, options)
 
     // scroll to it if it exists
     if (element !== null) {
-        await driver.executeAsyncScript(function (element, resolve) {
-            element.scrollIntoView({ block: "center", behavior: "instant"})
+        await driver.executeAsyncScript(function(element, resolve) {
+            element.scrollIntoView({ block: "center", behavior: "instant" })
             resolve()
         }, element)
     }
@@ -223,23 +248,27 @@ export async function scrollToElement(elementData: ActionQueryType, options?: Us
 }
 
 export async function scrollToTop() {
-    await driver.executeAsyncScript(function (resolve) {
+    debuglog("SCROLL_TO_TOP")
+
+    await driver.executeAsyncScript(function(resolve) {
         // @ts-ignore
-        window.scrollTo({left: 0, top: 0, behavior: "instant"})
+        window.scrollTo({ left: 0, top: 0, behavior: "instant" })
         resolve()
     })
 }
 
 export async function scrollToBottom() {
-    await driver.executeAsyncScript(function (resolve) {
+    debuglog("SCROLL_TO_BOTTOM")
+
+    await driver.executeAsyncScript(function(resolve) {
         // @ts-ignore
-        window.scrollTo({left: 0, top: document.body.scrollHeight, behavior: "instant"})
+        window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: "instant" })
         resolve()
     })
 }
 
 export async function browserLog(...args: any[]) {
-    await driver.executeAsyncScript(function (innerArgs: any[], resolve) {
+    await driver.executeAsyncScript(function(innerArgs: any[], resolve) {
         console.log(...innerArgs)
         resolve()
     }, args)
@@ -248,7 +277,7 @@ export async function browserLog(...args: any[]) {
 
 // should be opened dev tools
 export async function browserDebugger() {
-    await driver.executeAsyncScript(function (resolve) {
+    await driver.executeAsyncScript(function(resolve) {
         debugger;
         resolve()
     })
@@ -287,7 +316,7 @@ function selectorToLocator(selector: string): Locator {
 }
 
 function normalizeOptions(optionsParam: any): UserActionOptions {
-    let optionsBase = {...defaultOptions}
+    let optionsBase = { ...defaultOptions }
 
     if (typeof optionsParam === "object") {
         Object.assign(optionsBase, optionsParam)
@@ -297,10 +326,12 @@ function normalizeOptions(optionsParam: any): UserActionOptions {
 }
 
 export async function waitActionComplete() {
+    debuglog("WAIT_ACTION_COMPLETE")
     await driver.sleep(config.actionCompleteTimeout)
 }
 
 export async function waitBrowserClosed() {
+    debuglog("WAIT_BROWSER_CLOSED")
     while (true) {
         await driver.sleep(1000)
         let handles = await driver.getAllWindowHandles()
@@ -312,7 +343,8 @@ export async function waitBrowserClosed() {
 }
 
 export async function injectCSS(css: string) {
-    await driver.executeAsyncScript(function (css, resolve) {
+    debuglog("INJECT_CSS")
+    await driver.executeAsyncScript(function(css, resolve) {
         let styleElement = document.createElement("style")
         styleElement.innerHTML = css
         document.head.appendChild(styleElement)

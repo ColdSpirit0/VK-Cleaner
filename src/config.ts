@@ -6,6 +6,7 @@ let config = {
     saveProgress: true,
     logToFile: false,
     openDevTools: false,
+    debug: false,
     progressFilePath: "./progress.json",
     reportsDirectoryPath: "./reports/",
     manualRemoveReportFilename: "_ManualRemove",
