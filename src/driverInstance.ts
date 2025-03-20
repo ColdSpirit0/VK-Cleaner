@@ -17,6 +17,7 @@ export async function initDriver() {
     const options = new Options()
     options.addArguments(
         "user-data-dir=" + path.resolve(config.userDataPath),
+        "mute-audio", // TODO: better to disable media autoplay
     )
 
     if (config.openDevTools) {
