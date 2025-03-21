@@ -1,5 +1,5 @@
 import { initDriver, driver } from "../src/driverInstance";
-import { findElement, findElements } from "../src/utils/selenium";
+import { findElement, findElements, isElementOverlapped } from "../src/utils/selenium";
 import assert from "assert/strict"
 import path from "path";
 
@@ -7,7 +7,6 @@ import path from "path";
 describe("_", function () {
     this.beforeAll(async function () {
         await initDriver()
-        await driver.get("file://" + path.resolve("./tests/page1.html"))
     })
 
     this.afterAll(async function () {
@@ -15,6 +14,10 @@ describe("_", function () {
     })
 
     describe("findElement", function () {
+        this.beforeAll(async function () {
+            await driver.get("file://" + path.resolve("./tests/page1.html"))
+        })
+
         describe("safe=false throws error when no element", function () {
             step("now=false", async function () {
                 assert.rejects(async () => {
@@ -47,6 +50,10 @@ describe("_", function () {
     })
 
     describe("findElements", function () {
+        this.beforeAll(async function () {
+            await driver.get("file://" + path.resolve("./tests/page1.html"))
+        })
+
         describe("safe=false throws error when no elements", function () {
             step("now=false", async function () {
                 assert.rejects(async () => {
@@ -76,7 +83,28 @@ describe("_", function () {
                 assert.deepEqual(await findElements("#no-exists"), [])
             })
         })
+    })
 
+
+    describe("overlapping", async function() {
+        this.beforeAll(async function () {
+            await driver.get("file://" + path.resolve("./tests/overlapping.html"))
+        })
+
+        step("A is not overlapped", async function() {
+            const e = await findElement("#A")
+            assert.equal(await isElementOverlapped(e), false)
+        })
+
+        step("B is overlapped", async function() {
+            const e = await findElement("#B")
+            assert.equal(await isElementOverlapped(e), true)
+        })
+
+        step("C is overlapped", async function() {
+            const e = await findElement("#C")
+            assert.equal(await isElementOverlapped(e), true)
+        })
     })
 })
 

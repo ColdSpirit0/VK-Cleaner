@@ -79,6 +79,12 @@ export class Logger {
         this.logStdout.write(`${terminalFontStyles.fgRed}[${this.logSource}] ${message}${terminalFontStyles.reset}`);
     }
 
+    debug(...args: any[]) {
+        if (config.debug) {
+            console.log(...args)
+        }
+    }
+
     // async dumpObject(name: string, obj: any) {
     //     let filePath = path.join(Logger.logDirectory, name + ".json")
     //     await fs.promises.writeFile(filePath, JSON.stringify(obj, null, 4))

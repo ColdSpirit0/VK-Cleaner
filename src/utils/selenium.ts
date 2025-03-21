@@ -6,10 +6,6 @@ import { logger } from "./Logger"
 import { Command } from "selenium-webdriver/lib/command"
 
 
-function debuglog(...args: any[]) {
-    if (config.debug) console.log(...args)
-}
-
 /*
 
 ACTIONS (splitted by function)
@@ -52,7 +48,7 @@ const defaultOptions: UserActionOptions = {
 }
 
 export async function clickElement(elementData: ActionQueryType, options?: UserActionOptions) {
-    debuglog("CLICK_ELEMENT", elementData, options)
+    logger.debug("CLICK_ELEMENT", elementData, options)
 
     options = normalizeOptions(options)
     let element = await getElement(elementData, options)
@@ -76,7 +72,7 @@ export async function clickElement(elementData: ActionQueryType, options?: UserA
 
 
 export async function waitElementCountChanged(query: QueryType, options?: UserActionWaitOptions): Promise<CountChangeInfo> {
-    debuglog("WAIT_ELEMENT_COUNT_CHANGED", query, options)
+    logger.debug("WAIT_ELEMENT_COUNT_CHANGED", query, options)
 
     options = normalizeOptions(options)
     const findOptions: UserActionOptions = { safe: options.safe, now: true }
@@ -108,7 +104,7 @@ export async function waitElementCountChanged(query: QueryType, options?: UserAc
 
 // not tested
 export async function hoverElement(elementData: ActionQueryType, options?: UserActionOptions) {
-    debuglog("HOVER_ELEMENT", elementData, options)
+    logger.debug("HOVER_ELEMENT", elementData, options)
 
     options = normalizeOptions(options)
     let element = await getElement(elementData, options)
@@ -122,7 +118,7 @@ export async function hoverElement(elementData: ActionQueryType, options?: UserA
 }
 
 export async function findElement(query: QueryType, options?: UserActionOptions): Promise<WebElement> {
-    debuglog("FIND_ELEMENT", query, options)
+    logger.debug("FIND_ELEMENT", query, options)
 
     let locator: Locator = getLocator(query)
     options = normalizeOptions(options)
@@ -145,7 +141,7 @@ export async function findElement(query: QueryType, options?: UserActionOptions)
 }
 
 export async function findElements(query: QueryType, options?: UserActionOptions): Promise<WebElement[]> {
-    debuglog("FIND_ELEMENTS", query, options)
+    logger.debug("FIND_ELEMENTS", query, options)
 
     let locator: Locator = getLocator(query)
     options = normalizeOptions(options)
@@ -168,7 +164,7 @@ export async function findElements(query: QueryType, options?: UserActionOptions
 }
 
 export async function waitForElement(query: QueryType, options?: UserActionWaitOptions) {
-    debuglog("WAIT_ELEMENT", query, options)
+    logger.debug("WAIT_ELEMENT", query, options)
 
     // same as find element but now:false by default
     let optionsNorm = normalizeOptions(options)
@@ -191,7 +187,7 @@ export async function waitForElementHidden(elementData: ActionQueryType, options
 }
 
 export async function waitForElementDeleted(elementData: ActionQueryType, options?: UserActionWaitOptions) {
-    debuglog("WAIT_ELEMENT_DELETED", elementData, options)
+    logger.debug("WAIT_ELEMENT_DELETED", elementData, options)
 
     options = normalizeOptions(options)
     let element = await getElement(elementData, options)
@@ -212,7 +208,7 @@ export async function waitForElementDeleted(elementData: ActionQueryType, option
 }
 
 export async function waitForElements(query: QueryType, options?: UserActionWaitOptions) {
-    debuglog("WAIT_ELEMENTS", query, options)
+    logger.debug("WAIT_ELEMENTS", query, options)
 
     // same as find elements but now:false by default
     let optionsNorm = normalizeOptions(options)
@@ -221,7 +217,7 @@ export async function waitForElements(query: QueryType, options?: UserActionWait
 }
 
 export async function isElementExists(query: QueryType, options?: UserActionSafeOptions) {
-    debuglog("IS_ELEMENT_EXISTS", query, options)
+    logger.debug("IS_ELEMENT_EXISTS", query, options)
 
     let locator = getLocator(query)
     options = normalizeOptions(options)
@@ -231,7 +227,7 @@ export async function isElementExists(query: QueryType, options?: UserActionSafe
 }
 
 export async function scrollToElement(elementData: ActionQueryType, options?: UserActionOptions) {
-    debuglog("SCROLL_TO_ELEMENT", elementData, options)
+    logger.debug("SCROLL_TO_ELEMENT", elementData, options)
 
     options = normalizeOptions(options)
     let element = await getElement(elementData, options)
@@ -248,7 +244,7 @@ export async function scrollToElement(elementData: ActionQueryType, options?: Us
 }
 
 export async function scrollToTop() {
-    debuglog("SCROLL_TO_TOP")
+    logger.debug("SCROLL_TO_TOP")
 
     await driver.executeAsyncScript(function(resolve) {
         // @ts-ignore
@@ -258,7 +254,7 @@ export async function scrollToTop() {
 }
 
 export async function scrollToBottom() {
-    debuglog("SCROLL_TO_BOTTOM")
+    logger.debug("SCROLL_TO_BOTTOM")
 
     await driver.executeAsyncScript(function(resolve) {
         // @ts-ignore
@@ -294,6 +290,20 @@ async function getElement(elementData: ActionQueryType, options: UserActionOptio
     return element
 }
 
+export async function isElementOverlapped(element: WebElement) {
+    return await driver.executeAsyncScript(function(element, resolve) {
+        function isOverlapped(targetElement: Element) {
+            const rect = targetElement.getBoundingClientRect()
+            const foundElement = document.elementFromPoint(
+                rect.x + rect.width / 2,
+                rect.y + rect.height / 2
+            )
+            return !targetElement.contains(foundElement)
+        }
+        resolve(isOverlapped(element))
+    }, element)
+}
+
 function getLocator(query: QueryType): Locator {
     if (isString(query)) {
         return selectorToLocator(query)
@@ -326,12 +336,12 @@ function normalizeOptions(optionsParam: any): UserActionOptions {
 }
 
 export async function waitActionComplete() {
-    debuglog("WAIT_ACTION_COMPLETE")
+    logger.debug("WAIT_ACTION_COMPLETE")
     await driver.sleep(config.actionCompleteTimeout)
 }
 
 export async function waitBrowserClosed() {
-    debuglog("WAIT_BROWSER_CLOSED")
+    logger.debug("WAIT_BROWSER_CLOSED")
     while (true) {
         await driver.sleep(1000)
         let handles = await driver.getAllWindowHandles()
@@ -343,7 +353,7 @@ export async function waitBrowserClosed() {
 }
 
 export async function injectCSS(css: string) {
-    debuglog("INJECT_CSS")
+    logger.debug("INJECT_CSS")
     await driver.executeAsyncScript(function(css, resolve) {
         let styleElement = document.createElement("style")
         styleElement.innerHTML = css

@@ -1,7 +1,8 @@
+import { Condition, until } from "selenium-webdriver";
 import { driver } from "../driverInstance";
 import { Reporter } from "../Reporter";
 import { logger } from "../utils/Logger";
-import { findElement, findElements, isElementExists, waitForElement } from "../utils/selenium";
+import { findElement, findElements, isElementExists, isElementOverlapped, waitForElement } from "../utils/selenium";
 
 export async function openPage(url: string, reporter: Reporter) {
     // open url 
@@ -41,20 +42,13 @@ export async function openPage(url: string, reporter: Reporter) {
 // check captcha for all window (even if it appears again)
 // captcha is solved when its was showed and missed after for 1 second
 export async function waitCaptchaSolved() {
-    let captchaSolved = false
     let wasCaptcha = false
 
-    while (!captchaSolved) {
-        wasCaptcha = await waitCaptchaWindow()
+    while (await isCaptchaPresent()) {
+        wasCaptcha = true
+        await driver.sleep(3000)
 
-        if (wasCaptcha) {
-            // wait 3 second and check again
-            await driver.sleep(3000)
-            // next loop
-        }
-        else {
-            captchaSolved = true
-        }
+        logger.debug("modal found")
     }
 
     if (wasCaptcha) {
@@ -62,28 +56,36 @@ export async function waitCaptchaSolved() {
     }
 }
 
-// check captcha for one window
-async function waitCaptchaWindow() {
-    let captchaExists = true;
-    let captchaExisted = false;
-
-    while (captchaExists) {
-        let captchas = await findElements(`//*[@data-testid="modalbox"]`, { now: true });
-
-        if (captchas.length > 0) {
-            captchaExisted = true;
-            await driver.sleep(500);
-        }
-        else {
-            captchaExists = false;
-        }
-    }
-
-    return captchaExisted;
+async function isCaptchaPresent() {
+    const visibleElementsLocator = `//*[@id="pv_box"] | //*[class("TopNavBtn__profileImg")]`
+    const targetElements = await findElements(visibleElementsLocator)
+    const overlappedMap = await Promise.all(targetElements.map(isElementOverlapped))
+    return overlappedMap.every(Boolean);
 }
 
+// check captcha for one window
+// async function waitCaptchaWindow() {
+//     let captchaExists = true;
+//     let captchaExisted = false;
+
+
+//     while (captchaExists) {
+//         let captchas = await findElements(`//*[@data-testid="modalbox"]`, { now: true });
+
+//         if (captchas.length > 0) {
+//             captchaExisted = true;
+//             await driver.sleep(500);
+//         }
+//         else {
+//             captchaExists = false;
+//         }
+//     }
+
+//     return captchaExisted;
+// }
+
 export async function getUserId(): Promise<number> {
-    return await driver.executeAsyncScript(function (resolve) {
+    return await driver.executeAsyncScript(function(resolve) {
         // @ts-ignore
         resolve(vk.id)
     })
@@ -93,6 +95,6 @@ export async function getProfileUrl(): Promise<string> {
     await driver.get("https://vk.com")
 
     // get my page url
-    let element = await findElement(`#l_pr > a`, {safe: false})
+    let element = await findElement(`#l_pr > a`, { safe: false })
     return await element.getAttribute("href")
 }
