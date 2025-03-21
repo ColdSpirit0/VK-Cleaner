@@ -17,8 +17,23 @@ import { deleteWall } from "./deleteContent/deleteWall"
 main().catch(console.log)
 
 async function main() {
-    // init
     console.clear()
+
+    const args = process.argv.slice(2)
+    console.log("Args:", args)
+
+    // run with `npm run start -- debug`
+    if (args.includes("debug")) {
+        config.debug = true
+    }
+
+    if (args.includes("manual")) {
+        config.dontCloseBrowser = true
+        await initDriver()
+        return
+    }
+
+    // init
     await initDriver()
     let progress: Progress = await getProgress()
     await fs.promises.mkdir(config.reportsDirectoryPath, {recursive: true})
