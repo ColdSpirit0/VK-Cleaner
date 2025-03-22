@@ -2,7 +2,7 @@ import config from "./config"
 import { initDriver } from "./driverInstance"
 import { deleteLikes } from "./deleteContent/deleteLikes"
 import { loginVK } from "./loginVK"
-import { Progress } from "./progress"
+import { abortController, Progress, TaskCancelledError,  } from "./progress"
 import { Task } from "./Task"
 import fs from "fs"
 import { logger } from "./utils/Logger"
@@ -87,12 +87,18 @@ async function main() {
         progress.finish()
 
     } catch (error) {
-        logger.error("got error in main:\n", error)
-        logger.error(progress.toString())
+        if (error instanceof TaskCancelledError) {
+            logger.log("Aborted")
+        }
+        else {
+            logger.error("got error in main:\n", error)
+            logger.error(progress.toString())
+        }
     }
-
-    if (config.saveProgress) {
-        await progress.save()
+    finally {
+        if (config.saveProgress) {
+            await progress.save()
+        }
     }
 }
 
@@ -119,3 +125,8 @@ function parseArguments(tasks: TaskMap): { debug?: boolean, manual?: boolean, ta
     program.parse()
     return program.opts()
 }
+
+process.on('SIGINT', function() {
+    console.log("Caught interrupt signal, aborting...");
+    abortController.abort()
+});

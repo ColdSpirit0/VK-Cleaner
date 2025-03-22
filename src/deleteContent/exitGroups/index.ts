@@ -1,4 +1,4 @@
-import { Progress } from "../../progress";
+import { abortSignal, Progress, TaskCancelledError } from "../../progress";
 import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
 import { clickElement, findElement, hoverElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
@@ -24,12 +24,14 @@ export async function exitGroups(progress: Progress) {
     await openPage(o.groupsURL)
 
     while (await findElement(o.locators.loadMore)) {
+        if (abortSignal.aborted) throw new TaskCancelledError()
         await scrollToBottom()
         await waitActionComplete()
     }
 
     let leavedGroupsCount = 0
     while (await exitGroup()) {
+        if (abortSignal.aborted) throw new TaskCancelledError()
         leavedGroupsCount++
     }
 

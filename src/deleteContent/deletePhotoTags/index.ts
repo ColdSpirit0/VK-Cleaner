@@ -1,4 +1,4 @@
-import { Progress } from "../../progress";
+import { abortSignal, Progress, TaskCancelledError } from "../../progress";
 import { Task } from "../../Task";
 import { clickElement, findElement, waitActionComplete, waitForElement } from "../../utils/selenium";
 import lodash from "lodash"
@@ -17,6 +17,7 @@ export async function deletePhotoTags(progress: Progress) {
 
     let deletedTagsCount = 0
     while (await deletePhotoTag(userId, profileUrlRelative)) {
+        if (abortSignal.aborted) throw new TaskCancelledError()
         deletedTagsCount++
     } 
     await reporter.report("Удалено тегов с фото:", deletedTagsCount)

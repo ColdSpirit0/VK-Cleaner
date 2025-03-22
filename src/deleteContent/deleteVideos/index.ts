@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import { Progress } from "../../progress";
+import { abortSignal, Progress, TaskCancelledError } from "../../progress";
 import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
 import { clickElement, findElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
@@ -18,12 +18,14 @@ export async function deleteVideos(progress: Progress) {
     // load all videos
     let loadMoreElement = await findElement("#ui_all_load_more")
     while(loadMoreElement !== null && await loadMoreElement.isDisplayed()) {
+        if (abortSignal.aborted) throw new TaskCancelledError()
         await scrollToBottom()
     }
 
     // delete each video
     let deletedVideosCount = 0
     while(await deleteVideo()) {
+        if (abortSignal.aborted) throw new TaskCancelledError()
         deletedVideosCount++
     }
     await reporter.report("Удалено видео:", deletedVideosCount)

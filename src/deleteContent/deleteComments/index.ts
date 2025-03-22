@@ -1,7 +1,7 @@
 import config from "../../config"
 import { driver } from "../../driverInstance"
 import { CommentsParser } from "../../parsers/CommentsParser/CommentsParser"
-import { Progress } from "../../progress"
+import { abortSignal, Progress, TaskCancelledError } from "../../progress"
 import { Reporter } from "../../Reporter"
 import { Task } from "../../Task"
 import { logger } from "../../utils/Logger"
@@ -31,6 +31,8 @@ export async function deleteComments(progress: Progress) {
     let userId = null
 
     for (; progress.index < progress.data.length; progress.index++) {
+        if (abortSignal.aborted) throw new TaskCancelledError()
+
         const url: string = progress.data[progress.index]
 
         const pageOk = await openPage(url, reporter)

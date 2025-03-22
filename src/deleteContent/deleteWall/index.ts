@@ -1,4 +1,4 @@
-import { Progress } from "../../progress";
+import { abortSignal, Progress, TaskCancelledError } from "../../progress";
 import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
 import { clickElement, findElement, findElements, hoverElement, injectCSS, waitActionComplete } from "../../utils/selenium";
@@ -17,6 +17,7 @@ export async function deleteWall(progress: Progress) {
 
     let deletedPostsCount = 0
     while(await deletePost()) {
+        if (abortSignal) throw new TaskCancelledError()
         deletedPostsCount++
     }
     await reporter.report("Удалено постов:", deletedPostsCount)

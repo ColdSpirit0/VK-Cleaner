@@ -1,5 +1,5 @@
 import { driver } from "../../driverInstance";
-import { Progress } from "../../progress";
+import { abortSignal, Progress, TaskCancelledError } from "../../progress";
 import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
 import { clickElement, findElement, hoverElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
@@ -15,6 +15,7 @@ export async function deleteMusic(progress: Progress) {
     let loader = await findElement(".CatalogBlock__autoListLoader")
     if (loader !== null) {
         do {
+            if (abortSignal.aborted) throw new TaskCancelledError()
             await scrollToBottom()
             await driver.sleep(300)
         } while (await loader.isDisplayed());
@@ -22,6 +23,7 @@ export async function deleteMusic(progress: Progress) {
 
     let tracksDeletedCount = 0
     while(await deleteTrack()) {
+        if (abortSignal.aborted) throw new TaskCancelledError()
         tracksDeletedCount++
     }
     await reporter.report("Удалено треков:", tracksDeletedCount)

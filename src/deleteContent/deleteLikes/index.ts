@@ -2,7 +2,7 @@ import config from "../../config";
 import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
 import { LikesParser } from "../../parsers/LikeParser/LikesParser";
 import { LikeType } from "../../parsers/LikeParser/LikeType";
-import { Progress } from "../../progress";
+import { abortSignal, Progress, TaskCancelledError } from "../../progress";
 import { Task } from "../../Task";
 import { deleteLikeBase } from "./base";
 import { deleteLikeWallReply } from "./wallReply";
@@ -56,6 +56,8 @@ export async function deleteLikes(progress: Progress) {
     }
 
     for (; progress.index < progress.data.length; progress.index++) {
+        if (abortSignal.aborted) throw new TaskCancelledError()
+
         const like: LikeDataItem = progress.data[progress.index];
 
         let pageOk = await openPage(like.url, reporter)

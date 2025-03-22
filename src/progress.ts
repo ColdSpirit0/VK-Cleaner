@@ -5,6 +5,17 @@ import { isExists } from "./utils/fs";
 import path from "path";
 import { logger } from "./utils/Logger";
 
+// handles ctrl+c
+export const abortController = new AbortController()
+export const abortSignal = abortController.signal
+export class TaskCancelledError extends Error {
+  constructor(message = 'Task was cancelled') {
+    super(message);
+    this.name = 'TaskCancelledError';
+  }
+}
+
+
 export class Progress {
     task: null | Task = null
     data: null | any[] = null
