@@ -9,6 +9,7 @@ export class Progress {
     task: null | Task = null
     data: null | any[] = null
     index: number = 0
+    initialized: boolean = false
 
     async load() {
         if (await isExists(config.progressFilePath)) {
@@ -17,7 +18,8 @@ export class Progress {
 
             this.task = parsedData.task
             this.data = parsedData.data
-            this.index = parsedData.index || 0
+            this.index = parsedData.index ?? 0
+            this.initialized = parsedData.initialized ?? false
 
             // to be sure the task is completed
             if (this.index > 0) this.index--
@@ -36,11 +38,22 @@ export class Progress {
         this.task = null
         this.data = null
         this.index = 0
+        this.initialized = false
     }
 
     finish() {
         this.task = Task.Finished
         this.data = null
         this.index = 0
+        this.initialized = false
+    }
+
+    toString() {
+        return [
+            `Task: ${Task[this.task]}`,
+            `Index: ${this.index}`,
+            `Data item: ${this.data ? this.data[this.index] : null}`,
+            `Initialized: ${this.initialized}`
+        ].join(" | ")
     }
 }

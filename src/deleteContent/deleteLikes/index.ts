@@ -35,8 +35,7 @@ async function getParserData() {
 }
 
 export async function deleteLikes(progress: Progress) {
-    if (progress.task !== Task.DeleteLikes) {
-        progress.task = Task.DeleteLikes
+    if (!progress.initialized) {
 
         // get data from parser
         let likesDataRaw = await getParserData();
@@ -53,6 +52,7 @@ export async function deleteLikes(progress: Progress) {
         }
 
         progress.data = likesData
+        progress.initialized = true
     }
 
     for (; progress.index < progress.data.length; progress.index++) {

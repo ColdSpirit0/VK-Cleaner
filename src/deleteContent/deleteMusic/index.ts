@@ -8,10 +8,6 @@ import { getUserId } from "../vkHelpers";
 const reporter = new Reporter(Task.DeleteMusic)
 
 export async function deleteMusic(progress: Progress) {
-    if (progress.task !== Task.DeleteMusic) {
-        progress.task = Task.DeleteMusic
-    }
-
     let userId = await getUserId()
     await driver.get(`https://vk.com/audios${userId}?section=all`)
 

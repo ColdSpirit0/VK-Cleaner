@@ -21,10 +21,6 @@ const o = {
 const reporter = new Reporter(Task.ExitGroups)
 
 export async function exitGroups(progress: Progress) {
-    if (progress.task !== Task.ExitGroups) {
-        progress.task = Task.ExitGroups
-    }
-
     await driver.get(o.groupsURL)
 
     while (await findElement(o.locators.loadMore)) {

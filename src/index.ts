@@ -69,7 +69,7 @@ async function main() {
     })()
 
     logger.debug("Tasks to run:", taskOrder.map(t => Task[t]))
-    logger.debug("Progress:", Task[progress.task], progress.index)
+    logger.debug(progress.toString())
 
     await initDriver()
 
@@ -79,7 +79,8 @@ async function main() {
         for (const task of taskOrder) {
             const taskfun = tasks.get(task)
 
-            // progress.task = task
+            progress.task = task
+            progress.initialized = false
             await taskfun(progress)
         }
 
@@ -87,7 +88,7 @@ async function main() {
 
     } catch (error) {
         logger.error("got error in main:\n", error)
-        logger.error("data item:", progress.data[progress.index])
+        logger.error(progress.toString())
     }
 
     if (config.saveProgress) {

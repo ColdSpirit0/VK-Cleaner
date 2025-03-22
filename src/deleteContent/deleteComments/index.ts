@@ -11,16 +11,21 @@ import { getUserId, openPage } from "../vkHelpers"
 
 const reporter = new Reporter(Task.DeleteComments)
 
+
 export async function deleteComments(progress: Progress) {
-    if (progress.task !== Task.DeleteComments) {
-        progress.task = Task.DeleteComments
+    if (!progress.initialized) {
+        try {
+            const parser = new CommentsParser()
+            parser.init(config.archivePath)
+            progress.data = await parser.parse()
+        }
+        catch (e) {
+            logger.error("Cannot parse comments:\n", e)
+            logger.log("Skipping task DeleteComments")
+            return
+        }
 
-        let parser = new CommentsParser()
-        parser.init(config.archivePath)
-
-        let urls = await parser.parse()
-
-        progress.data = urls
+        progress.initialized = true
     }
 
     let userId = null
@@ -44,10 +49,10 @@ export async function deleteComments(progress: Progress) {
 async function deleteCommentsInPage(userId: number) {
     await driver.sleep(1000)
     const deleteButtonSelector = `//*[class("replies_list")]//*[class("reply") and descendant::*[class("author") and @data-from-id="${userId}"]]//*[class("reply_delete_button")]`
-    let buttons = await findElements(deleteButtonSelector, {now: true})
+    let buttons = await findElements(deleteButtonSelector, { now: true })
 
     for (const button of buttons) {
-        await clickElement(button, {now: true})
+        await clickElement(button, { now: true })
         await waitActionComplete()
     }
 

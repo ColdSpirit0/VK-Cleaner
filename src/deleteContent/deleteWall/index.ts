@@ -8,10 +8,6 @@ import { getUserId } from "../vkHelpers";
 const reporter = new Reporter(Task.DeleteWall)
 
 export async function deleteWall(progress: Progress) {
-    if (progress.task !== Task.DeleteWall) {
-        progress.task = Task.DeleteWall
-    }
-
     let userId = await getUserId()
     await driver.get(`https://vk.com/wall${userId}`)
     await injectCSS(`

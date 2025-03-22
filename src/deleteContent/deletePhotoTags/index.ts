@@ -9,10 +9,6 @@ import { Reporter } from "../../Reporter";
 const reporter = new Reporter(Task.DeletePhotoTags)
 
 export async function deletePhotoTags(progress: Progress) {
-    if (progress.task !== Task.DeletePhotoTags) {
-        progress.task = Task.DeletePhotoTags
-    }
-
     // get profile url tail
     let profileUrlFull = await getProfileUrl()
     let profileUrlRelative = "/" + lodash.last(profileUrlFull.split("/"))

@@ -9,10 +9,6 @@ import { getProfileUrl } from "../vkHelpers";
 const reporter = new Reporter(Task.DeleteVideos)
 
 export async function deleteVideos(progress: Progress) {
-    if (progress.task !== Task.DeleteVideos) {
-        progress.task = Task.DeleteVideos
-    }
-
     // get user nickname
     let profileUrl = await getProfileUrl()
     let userNickname = lodash.last(profileUrl.split("/"))
