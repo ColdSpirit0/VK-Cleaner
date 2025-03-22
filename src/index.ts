@@ -2,7 +2,7 @@ import config from "./config"
 import { initDriver } from "./driverInstance"
 import { deleteLikes } from "./deleteContent/deleteLikes"
 import { loginVK } from "./loginVK"
-import { getProgress, Progress, saveProgress } from "./progress"
+import { Progress } from "./progress"
 import { Task } from "./Task"
 import fs from "fs"
 import { logger } from "./utils/Logger"
@@ -43,25 +43,25 @@ async function main() {
     }
 
     // init
-    let progress: Progress = await getProgress()
+    const progress = new Progress()
     await fs.promises.mkdir(config.reportsDirectoryPath, { recursive: true })
 
-    const taskOrder: Task[] = (() => {
+    const taskOrder: Task[] = await (async () => {
         // if user defined tasks, use them
         // and ignore the progress
         if (args.tasks) {
             config.saveProgress = false
-            progress = { task: null, data: null, index: 0 }
             return args.tasks
         }
 
         // start tasks from progress-saved
+        await progress.load()
         const taskOrder = [...tasks.keys()]
         const defaultTaskIndex = taskOrder.indexOf(progress.task)
 
-        // if task not found in the taskOrder, restore the progress
+        // if task not found in the taskOrder then begin from zero
         if (defaultTaskIndex === -1) {
-            progress = { task: null, data: null, index: 0 }
+            progress.reset()
             return [...tasks.keys()]
         }
 
@@ -69,6 +69,7 @@ async function main() {
     })()
 
     logger.debug("Tasks to run:", taskOrder.map(t => Task[t]))
+    logger.debug("Progress:", Task[progress.task], progress.index)
 
     await initDriver()
 
@@ -82,9 +83,7 @@ async function main() {
             await taskfun(progress)
         }
 
-        progress.task = Task.Finished
-        progress.data = null
-        progress.index = 0
+        progress.finish()
 
     } catch (error) {
         logger.error("got error in main:\n", error)
@@ -92,7 +91,7 @@ async function main() {
     }
 
     if (config.saveProgress) {
-        await saveProgress(progress)
+        await progress.save()
     }
 }
 
