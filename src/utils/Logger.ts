@@ -80,7 +80,7 @@ export class Logger {
     }
 
     debug(...args: any[]) {
-        if (config.debug) {
+        if (config.verbose) {
             console.log(...args)
         }
     }

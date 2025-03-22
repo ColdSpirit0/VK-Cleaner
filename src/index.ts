@@ -34,7 +34,7 @@ async function main() {
     // parse and process args
     const args = parseArguments(tasks)
 
-    if (args.debug) config.debug = true
+    if (args.verbose) config.verbose = true
 
     if (args.manual) {
         config.dontCloseBrowser = true
@@ -103,13 +103,13 @@ async function main() {
 }
 
 
-function parseArguments(tasks: TaskMap): { debug?: boolean, manual?: boolean, tasks?: Task[] } {
+function parseArguments(tasks: TaskMap): { verbose?: boolean, manual?: boolean, tasks?: Task[] } {
     const possibleTaskValues = "Possible values: "
         + [...tasks.keys()].map(k => Task[k]).join(", ")
 
     program
         .name("npm run start --")
-        .option("-d --debug", "Enable debug mode")
+        .option("-v --verbose", "Enable verbose mode")
         .option("-m --manual", "Run in manual mode")
         .option("-t --tasks <tasks...>", `Specify which tasks to run, separated by spaces.\n${possibleTaskValues}`,
             (value: string, previous: undefined | [Task]) => {
