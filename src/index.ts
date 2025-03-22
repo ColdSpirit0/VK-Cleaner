@@ -1,62 +1,85 @@
 import config from "./config"
-import { initDriver, driver } from "./driverInstance"
+import { initDriver } from "./driverInstance"
 import { deleteLikes } from "./deleteContent/deleteLikes"
 import { loginVK } from "./loginVK"
 import { getProgress, Progress, saveProgress } from "./progress"
 import { Task } from "./Task"
 import fs from "fs"
 import { logger } from "./utils/Logger"
-import { waitBrowserClosed } from "./utils/selenium"
 import { deleteComments } from "./deleteContent/deleteComments"
 import { deletePhotoTags } from "./deleteContent/deletePhotoTags"
 import { exitGroups } from "./deleteContent/exitGroups"
 import { deleteVideos } from "./deleteContent/deleteVideos"
 import { deleteMusic } from "./deleteContent/deleteMusic"
 import { deleteWall } from "./deleteContent/deleteWall"
+import { InvalidOptionArgumentError, program } from "commander"
+
+
+type TaskMap = Map<Task, Function>
+
 
 main().catch(console.log)
 
+
 async function main() {
-    console.clear()
+    const tasks: TaskMap = new Map()
+    tasks.set(Task.DeleteWall, deleteWall)
+    tasks.set(Task.DeleteLikes, deleteLikes)
+    tasks.set(Task.DeleteComments, deleteComments)
+    tasks.set(Task.DeleteVideos, deleteVideos)
+    tasks.set(Task.DeleteMusic, deleteMusic)
+    tasks.set(Task.DeletePhotoTags, deletePhotoTags)
+    tasks.set(Task.ExitGroups, exitGroups)
 
-    const args = process.argv.slice(2)
-    console.log("Args:", args)
+    // parse and process args
+    const args = parseArguments(tasks)
 
-    // run with `npm run start -- debug`
-    if (args.includes("debug")) {
-        config.debug = true
-    }
+    if (args.debug) config.debug = true
 
-    if (args.includes("manual")) {
+    if (args.manual) {
         config.dontCloseBrowser = true
         await initDriver()
         return
     }
 
     // init
-    await initDriver()
     let progress: Progress = await getProgress()
-    await fs.promises.mkdir(config.reportsDirectoryPath, {recursive: true})
-    
-    // work with vk
+    await fs.promises.mkdir(config.reportsDirectoryPath, { recursive: true })
+
+    const taskOrder: Task[] = (() => {
+        // if user defined tasks, use them
+        // and ignore the progress
+        if (args.tasks) {
+            config.saveProgress = false
+            progress = { task: null, data: null, index: 0 }
+            return args.tasks
+        }
+
+        // start tasks from progress-saved
+        const taskOrder = [...tasks.keys()]
+        const defaultTaskIndex = taskOrder.indexOf(progress.task)
+
+        // if task not found in the taskOrder, restore the progress
+        if (defaultTaskIndex === -1) {
+            progress = { task: null, data: null, index: 0 }
+            return [...tasks.keys()]
+        }
+
+        return taskOrder.slice(defaultTaskIndex)
+    })()
+
+    logger.debug("Tasks to run:", taskOrder.map(t => Task[t]))
+
+    await initDriver()
+
     try {
+        // work with vk
         await loginVK()
-        switch (progress.task) {
-            default:
-            case Task.DeleteWall:
-                await deleteWall(progress)
-            case Task.DeleteLikes:
-                await deleteLikes(progress)
-            case Task.DeleteComments:
-                await deleteComments(progress)
-            case Task.DeleteVideos:
-                await deleteVideos(progress)
-            case Task.DeleteMusic:
-                await deleteMusic(progress)
-            case Task.DeletePhotoTags:
-                await deletePhotoTags(progress)
-            case Task.ExitGroups:
-                await exitGroups(progress)
+        for (const task of taskOrder) {
+            const taskfun = tasks.get(task)
+
+            // progress.task = task
+            await taskfun(progress)
         }
 
         progress.task = Task.Finished
@@ -73,3 +96,26 @@ async function main() {
     }
 }
 
+
+function parseArguments(tasks: TaskMap): { debug?: boolean, manual?: boolean, tasks?: Task[] } {
+    const possibleTaskValues = "Possible values: "
+        + [...tasks.keys()].map(k => Task[k]).join(", ")
+
+    program
+        .name("npm run start --")
+        .option("-d --debug", "Enable debug mode")
+        .option("-m --manual", "Run in manual mode")
+        .option("-t --tasks <tasks...>", `Specify which tasks to run, separated by spaces.\n${possibleTaskValues}`,
+            (value: string, previous: undefined | [Task]) => {
+                const task = Task[value]
+                if (task === undefined || !tasks.has(task)) {
+                    throw new InvalidOptionArgumentError(`${value} is not valid task name.\n${possibleTaskValues}`)
+                }
+                if (previous === undefined) return [task]
+                return [...previous, task]
+            }
+        )
+
+    program.parse()
+    return program.opts()
+}

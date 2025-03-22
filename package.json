@@ -18,6 +18,7 @@
     "@types/node": "^17.0.4",
     "@types/selenium-webdriver": "^4.0.20",
     "cli-progress": "^3.10.0",
+    "commander": "^13.1.0",
     "date-format": "^4.0.7",
     "dotenv": "^16.0.0",
     "download": "^8.0.0",
