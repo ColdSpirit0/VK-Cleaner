@@ -3,13 +3,13 @@ import { Progress } from "../../progress";
 import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
 import { clickElement, findElement, hoverElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
-import { getUserId } from "../vkHelpers";
+import { getUserId, openPage } from "../vkHelpers";
 
 const reporter = new Reporter(Task.DeleteMusic)
 
 export async function deleteMusic(progress: Progress) {
     let userId = await getUserId()
-    await driver.get(`https://vk.com/audios${userId}?section=all`)
+    await openPage(`https://vk.com/audios${userId}?section=all`, reporter)
 
     // load all audios
     let loader = await findElement(".CatalogBlock__autoListLoader")

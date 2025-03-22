@@ -2,7 +2,7 @@ import { Progress } from "../../progress";
 import { Task } from "../../Task";
 import { clickElement, findElement, waitActionComplete, waitForElement } from "../../utils/selenium";
 import lodash from "lodash"
-import { getProfileUrl, getUserId } from "../vkHelpers";
+import { getProfileUrl, getUserId, openPage } from "../vkHelpers";
 import { driver } from "../../driverInstance";
 import { Reporter } from "../../Reporter";
 
@@ -24,7 +24,7 @@ export async function deletePhotoTags(progress: Progress) {
 
 async function deletePhotoTag(userId: number, profileUrlRelative: string): Promise<boolean> {
     // open photos page
-    await driver.get(`https://vk.com/tag${userId}`)
+    await openPage(`https://vk.com/tag${userId}`)
     
     // open first photo
     let photoThumb = await findElement(`#photos_container_photos .photos_row`)

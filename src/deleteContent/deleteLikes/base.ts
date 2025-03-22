@@ -1,7 +1,7 @@
 import { driver } from "../../driverInstance";
 import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
 import { clickElement, findElements, isElementExists, waitActionComplete } from "../../utils/selenium";
-import { waitCaptchaSolved } from "../vkHelpers";
+import { waitModalClosed } from "../vkHelpers";
 import { reporter } from "./reporter";
 
 const o = {
@@ -45,13 +45,13 @@ export async function deleteLikesCommon() {
     let likeButtons = await findElements(selector);
 
     if (likeButtons.length > 0) {
-        await waitCaptchaSolved()
+        await waitModalClosed()
     }
 
     for (const button of likeButtons) {
         await clickElement(button);
         await waitActionComplete();
-        await waitCaptchaSolved();
+        await waitModalClosed();
     }
     return likeButtons;
 }

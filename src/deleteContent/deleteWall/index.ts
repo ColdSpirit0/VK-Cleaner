@@ -1,15 +1,14 @@
-import { driver } from "../../driverInstance";
 import { Progress } from "../../progress";
 import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
 import { clickElement, findElement, findElements, hoverElement, injectCSS, waitActionComplete } from "../../utils/selenium";
-import { getUserId } from "../vkHelpers";
+import { getUserId, openPage } from "../vkHelpers";
 
 const reporter = new Reporter(Task.DeleteWall)
 
 export async function deleteWall(progress: Progress) {
     let userId = await getUserId()
-    await driver.get(`https://vk.com/wall${userId}`)
+    await openPage(`https://vk.com/wall${userId}`)
     await injectCSS(`
     .dld {
         display: none !important;

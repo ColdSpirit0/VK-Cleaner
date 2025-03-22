@@ -1,7 +1,7 @@
 import { driver } from "../../driverInstance";
 import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
 import { clickElement, findElement, findElements, scrollToBottom, waitActionComplete, waitForElementDeleted } from "../../utils/selenium";
-import { waitCaptchaSolved } from "../vkHelpers";
+import { waitModalClosed } from "../vkHelpers";
 import { reporter } from "./reporter";
 
 export async function deleteLikeWallReply(like: LikeDataItem) {
@@ -31,7 +31,7 @@ export async function deleteLikeWallReply(like: LikeDataItem) {
     for (const button of likeButtons) {
         await clickElement(button);
         await waitActionComplete();
-        await waitCaptchaSolved();
+        await waitModalClosed();
     }
 
     await reporter.report(like.url, likeButtons.length || "Лайки не найдены")

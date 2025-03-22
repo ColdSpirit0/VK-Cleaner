@@ -1,10 +1,9 @@
 import lodash from "lodash";
-import { driver } from "../../driverInstance";
 import { Progress } from "../../progress";
 import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
 import { clickElement, findElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
-import { getProfileUrl } from "../vkHelpers";
+import { getProfileUrl, openPage } from "../vkHelpers";
 
 const reporter = new Reporter(Task.DeleteVideos)
 
@@ -14,7 +13,7 @@ export async function deleteVideos(progress: Progress) {
     let userNickname = lodash.last(profileUrl.split("/"))
 
     // open videos page
-    await driver.get(`https://vk.com/video/@${userNickname}`)
+    await openPage(`https://vk.com/video/@${userNickname}`)
 
     // load all videos
     let loadMoreElement = await findElement("#ui_all_load_more")

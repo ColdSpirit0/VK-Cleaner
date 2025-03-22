@@ -1,8 +1,8 @@
-import { driver } from "../../driverInstance";
 import { Progress } from "../../progress";
 import { Reporter } from "../../Reporter";
 import { Task } from "../../Task";
 import { clickElement, findElement, hoverElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
+import { openPage } from "../vkHelpers";
 
 const o = {
     groupsURL: `https://vk.com/groups/my_all_groups`,
@@ -21,7 +21,7 @@ const o = {
 const reporter = new Reporter(Task.ExitGroups)
 
 export async function exitGroups(progress: Progress) {
-    await driver.get(o.groupsURL)
+    await openPage(o.groupsURL)
 
     while (await findElement(o.locators.loadMore)) {
         await scrollToBottom()
