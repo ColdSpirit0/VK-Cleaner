@@ -7,6 +7,15 @@ import { getProfileUrl, getUserId, openPage } from "../vkHelpers";
 
 const reporter = new Reporter(Task.DeletePhotoTags)
 
+
+const o = {
+    locators: {
+        photoThumb: `//*[contains(concat(" ", @class), " PhotosPagePhotoGridItem__photoWrapper")]//ancestor-or-self::a`,
+        deleteButton: (profileUrlRelative: string) =>
+            `//*[@id="pv_tags"]//*[class("pv_tag_span") and descendant::a[@href="${profileUrlRelative}"]]/parent::*//*[class("delete")]`,
+    }
+}
+
 export async function deletePhotoTags(progress: Progress) {
     // get profile url tail
     let profileUrlFull = await getProfileUrl()
@@ -27,7 +36,7 @@ async function deletePhotoTag(userId: number, profileUrlRelative: string): Promi
     await openPage(`https://vk.com/tag${userId}`)
     
     // open first photo
-    let photoThumb = await findElement(`#photos_container_photos .photos_row`)
+    let photoThumb = await findElement(o.locators.photoThumb)
     if (photoThumb === null) {
         return false
     }
@@ -38,7 +47,7 @@ async function deletePhotoTag(userId: number, profileUrlRelative: string): Promi
     await waitForElement("#pv_tags")
 
     // find self target and click remove
-    let deleteButton = await findElement(`//*[@id="pv_tags"]//*[class("pv_tag_span") and descendant::a[@href="${profileUrlRelative}"]]/ancestor::*//*[class("delete")]`)
+    let deleteButton = await findElement(o.locators.deleteButton(profileUrlRelative))
     await clickElement(deleteButton)
     await waitActionComplete()
 
