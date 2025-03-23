@@ -11,24 +11,8 @@ export async function deleteLikeWallReply(like: LikeDataItem) {
     // wait for VK scroll
     await driver.sleep(1000);
 
-    // reorder comments ascending
-    // let reoderElement = await clickElement(`.post_replies_header .post_replies_reorder`, {now: true})
-    // if (reoderElement !== null) {
-    //     await clickElement(`.post_replies_header .eltt .radiobtn[data-order="asc"]`, {safe: false})
-    //     await waitForElementHidden(`.post_replies_header .eltt`, {safe: false})
-    //     await driver.sleep(config.actionCompleteTimeout)
-    // }
-    // let commentsLoaded = await loadAllCommentsAuto()
-    // if (!commentsLoaded) {
-    //     await loadAllCommentsManually()
-    // }
-    // show answers
-    // for (const reply of await findElements(`.replies_list .replies_short_deep`, {now: true})) {
-    //     await clickElement(reply)
-    //     await driver.sleep(config.actionCompleteTimeout)
-    // }
     // get all like buttons and click
-    let selector = `//a[class("like_btn") and class("_like") and class("active")]`;
+    let selector = `//*[class("like_btn") and class("active")]`;
     let likeButtons = await findElements(selector, { now: true });
 
     for (const button of likeButtons) {
