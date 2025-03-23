@@ -1,5 +1,5 @@
-import { initDriver, driver } from "../src/driverInstance";
-import { findElement, findElements, isElementOverlapped } from "../src/utils/selenium";
+import { initDriver, driver } from "@/driver";
+import { findElement, findElements, isElementOverlapped } from "@/utils/selenium";
 import assert from "assert/strict"
 import path from "path";
 

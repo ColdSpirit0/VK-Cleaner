@@ -1,4 +1,4 @@
-import { By, Locator, WebElement } from "selenium-webdriver"
+import { WebElement } from "selenium-webdriver"
 
 export function isString(v): v is string {
     return typeof v === "string"

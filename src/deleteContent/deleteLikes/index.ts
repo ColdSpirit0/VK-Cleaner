@@ -1,15 +1,14 @@
-import config from "../../config";
-import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
-import { LikesParser } from "../../parsers/LikeParser/LikesParser";
-import { LikeType } from "../../parsers/LikeParser/LikeType";
-import { abortSignal, Progress, TaskCancelledError } from "../../progress";
-import { Task } from "../../Task";
+import config from "@/config";
+import { LikeDataItem } from "@/parsers/LikeParser/LikeDataItem";
+import { LikesParser } from "@/parsers/LikeParser/LikesParser";
+import { LikeType } from "@/parsers/LikeParser/LikeType";
+import { abortSignal, Progress, TaskCancelledError } from "@/classes/Progress";
 import { deleteLikeBase } from "./base";
 import { deleteLikeWallReply } from "./wallReply";
-import { deleteLikePhotoComments, deleteLikeTopicComments, deleteLikeVideoComments } from "./comments";
-import { reporter } from "./reporter";
 import { openPage } from "../vkHelpers";
 import manualRemoveReporter from "../manualRemoveReporter";
+import { deleteLikePhotoComments, deleteLikeTopicComments, deleteLikeVideoComments } from "./comments";
+import { reporter } from "./reporter";
 
 const customLikes: LikeDataItem[] = [
     // you can setup test data here:

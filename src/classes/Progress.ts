@@ -1,9 +1,9 @@
-import { Task } from "./Task";
-import config from "./config";
 import fs from "fs";
-import { isExists } from "./utils/fs";
 import path from "path";
-import { logger } from "./utils/Logger";
+import config from "@/config";
+import { Task } from "@/classes/Task";
+import { isExists } from "@/utils/fs";
+import { logger } from "@/utils/Logger";
 
 // handles ctrl+c
 export const abortController = new AbortController()

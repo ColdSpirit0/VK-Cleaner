@@ -1,7 +1,7 @@
-import { abortSignal, Progress, TaskCancelledError } from "../../progress";
-import { Reporter } from "../../Reporter";
-import { Task } from "../../Task";
-import { clickElement, findElement, hoverElement, scrollToBottom, waitActionComplete } from "../../utils/selenium";
+import { abortSignal, Progress, TaskCancelledError } from "@/classes/Progress";
+import { Reporter } from "@/classes/Reporter";
+import { Task } from "@/classes/Task";
+import { clickElement, findElement, hoverElement, scrollToBottom, waitActionComplete } from "@/utils/selenium";
 import { openPage } from "../vkHelpers";
 
 const o = {

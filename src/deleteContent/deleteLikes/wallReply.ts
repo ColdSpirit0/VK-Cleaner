@@ -1,6 +1,9 @@
-import { driver } from "../../driverInstance";
-import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
-import { clickElement, findElement, findElements, scrollToBottom, waitActionComplete, waitForElementDeleted } from "../../utils/selenium";
+import { driver } from "@/driver";
+import { LikeDataItem } from "@/parsers/LikeParser/LikeDataItem";
+import {
+    clickElement, findElement, findElements,
+    scrollToBottom, waitActionComplete, waitForElementDeleted
+} from "@/utils/selenium";
 import { waitModalClosed } from "../vkHelpers";
 import { reporter } from "./reporter";
 

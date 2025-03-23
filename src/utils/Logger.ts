@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 import util from "util"
 import dateformat from "date-format"
-import config from "../config"
+import config from "@/config"
 
 const terminalFontStyles = {
     reset: "\x1b[0m",

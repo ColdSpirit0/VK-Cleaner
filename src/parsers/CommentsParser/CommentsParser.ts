@@ -1,9 +1,9 @@
-import path from "path";
-import { getFiles } from "../../utils/fs";
-import { ParserAbstract } from "../ParserAbstract";
-import { parse as parseHTML } from "node-html-parser"
 import fs from "fs"
+import path from "path";
+import { parse as parseHTML } from "node-html-parser"
 import iconv from "iconv-lite"
+import { getFiles } from "@/utils/fs";
+import { ParserAbstract } from "../ParserAbstract";
 
 export class CommentsParser extends ParserAbstract {
     targetDirectory: string = "comments"

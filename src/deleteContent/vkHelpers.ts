@@ -1,8 +1,7 @@
-import { Condition, until } from "selenium-webdriver";
-import { driver } from "../driverInstance";
-import { Reporter } from "../Reporter";
-import { logger } from "../utils/Logger";
-import { findElement, findElements, isElementExists, isElementOverlapped, waitForElement } from "../utils/selenium";
+import { driver } from "@/driver";
+import { Reporter } from "@/classes/Reporter";
+import { logger } from "@/utils/Logger";
+import { findElement, findElements, isElementExists, isElementOverlapped, waitForElement } from "@/utils/selenium";
 
 export async function openPage(url: string, reporter: Reporter = null) {
     // open url 

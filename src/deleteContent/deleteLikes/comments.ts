@@ -1,5 +1,5 @@
-import { LikeDataItem } from "../../parsers/LikeParser/LikeDataItem";
-import { clickElement, findElement, isElementExists, scrollToBottom, waitElementCountChanged } from "../../utils/selenium";
+import { LikeDataItem } from "@/parsers/LikeParser/LikeDataItem";
+import { clickElement, findElement, isElementExists, scrollToBottom, waitElementCountChanged } from "@/utils/selenium";
 import { deleteLikesCommon, ensurePageLoaded } from "./base";
 import { reporter } from "./reporter";
 

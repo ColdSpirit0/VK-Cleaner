@@ -1,10 +1,9 @@
-import { abortSignal, Progress, TaskCancelledError } from "../../progress";
-import { Task } from "../../Task";
-import { clickElement, findElement, waitActionComplete, waitForElement } from "../../utils/selenium";
 import lodash from "lodash"
+import { abortSignal, Progress, TaskCancelledError } from "@/classes/Progress";
+import { Task } from "@/classes/Task";
+import { Reporter } from "@/classes/Reporter";
+import { clickElement, findElement, waitActionComplete, waitForElement } from "@/utils/selenium";
 import { getProfileUrl, getUserId, openPage } from "../vkHelpers";
-import { driver } from "../../driverInstance";
-import { Reporter } from "../../Reporter";
 
 const reporter = new Reporter(Task.DeletePhotoTags)
 

@@ -1,9 +1,9 @@
 import path from "path";
+import fs from "fs"
 import { Browser, Builder, WebDriver } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/chrome";
-import config from "./config";
-import fs from "fs"
-import { isExists } from "./utils/fs";
+import config from "@/config";
+import { isExists } from "@/utils/fs";
 
 
 export let driver: WebDriver

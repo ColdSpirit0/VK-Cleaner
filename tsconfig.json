@@ -9,5 +9,14 @@
         // "noEmitHelpers": true,
         "outDir": "build",
         // "removeComments": false,
+        "baseUrl": "src",
+        "paths": {
+            "@/*": [
+                "./*"
+            ]
+        }
+    },
+    "ts-node": {
+        "require": ["tsconfig-paths/register"]
     }
 }

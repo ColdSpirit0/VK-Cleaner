@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path";
-import config from "./config";
-import { Task } from "./Task";
+import config from "@/config";
+import { Task } from "@/classes/Task";
 
 export class Reporter {
     filePath: string;

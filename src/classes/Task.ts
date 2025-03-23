@@ -1,4 +1,3 @@
-
 export enum Task {
     None,
     DeleteLikes,

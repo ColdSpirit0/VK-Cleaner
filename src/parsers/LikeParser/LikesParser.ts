@@ -1,11 +1,11 @@
 import fs from "fs"
 import path from "path"
-import { getDirectries, getFiles } from "../../utils/fs"
+import { parse as parseHTML } from "node-html-parser"
+import iconv from "iconv-lite"
+import { getDirectries, getFiles } from "@/utils/fs"
 import { ParserAbstract } from "../ParserAbstract"
 import { LikeDataItem } from "./LikeDataItem"
 import { LikeType } from "./LikeType"
-import { parse as parseHTML } from "node-html-parser"
-import iconv from "iconv-lite"
 
 export class LikesParser extends ParserAbstract {
     logName: string = "LikesParser"
