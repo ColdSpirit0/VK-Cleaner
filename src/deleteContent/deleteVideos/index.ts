@@ -4,8 +4,16 @@ import { Reporter } from "@/classes/Reporter";
 import { Task } from "@/classes/Task";
 import { clickElement, findElement, scrollToBottom, waitActionComplete } from "@/utils/selenium";
 import { getProfileUrl, openPage } from "../vkHelpers";
+import { driver } from "@/driver";
 
 const reporter = new Reporter(Task.DeleteVideos)
+
+const o = {
+    locators: {
+        loadMore: `//*[contains(concat(" ", @class), " DynamicPagination__root--")]`,
+        videoDeleteButton: `.VideoCard:not(.VideoCard--deleted) .VideoCard__action--delete`,
+    }
+}
 
 export async function deleteVideos(progress: Progress) {
     // get user nickname
@@ -16,15 +24,15 @@ export async function deleteVideos(progress: Progress) {
     await openPage(`https://vk.com/video/@${userNickname}`)
 
     // load all videos
-    let loadMoreElement = await findElement("#ui_all_load_more")
-    while(loadMoreElement !== null && await loadMoreElement.isDisplayed()) {
+    while (await findElement(o.locators.loadMore) !== null) {
         if (abortSignal.aborted) throw new TaskCancelledError()
         await scrollToBottom()
+        await driver.sleep(200)
     }
 
     // delete each video
     let deletedVideosCount = 0
-    while(await deleteVideo()) {
+    while (await deleteVideo()) {
         if (abortSignal.aborted) throw new TaskCancelledError()
         deletedVideosCount++
     }
@@ -32,18 +40,11 @@ export async function deleteVideos(progress: Progress) {
 }
 
 async function deleteVideo() {
-    // let card = await hoverElement(".VideoCard:not(.VideoCard--deleted)")
-    // if (card === null) {
-    //     return false
-    // }
-
-    // await clickElement(".VideoCard:not(.VideoCard--deleted) .VideoCard__action--delete", {safe: false})
-    let button = await clickElement(".VideoCard:not(.VideoCard--deleted) .VideoCard__action--delete")
+    let button = await clickElement(o.locators.videoDeleteButton)
     if (button === null) {
         return false
     }
     await waitActionComplete()
-    // await waitBrowserClosed()
 
     return true
 }
