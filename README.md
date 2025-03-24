@@ -43,7 +43,7 @@
 
 * Установить браузер [Chrome](https://www.google.com/chrome/). Желательно отключить браузеру автоматические обновления на время удаления данных.
 
-* Скачать [Selenium Chrome Driver](https://www.selenium.dev/documentation/webdriver/getting_started/install_drivers/) для вашей версии хрома. Распаковать его в директорию, допустим `C://SeleniumDrivers`. Добавить директорию в PATH ([видео](https://www.youtube.com/watch?v=mqIgUbpSz_A)).
+* Скачать [Selenium Chrome Driver](https://googlechromelabs.github.io/chrome-for-testing/#stable) для вашей версии хрома. Распаковать его в директорию, допустим `C://SeleniumDrivers`. Добавить директорию в PATH ([видео](https://www.youtube.com/watch?v=mqIgUbpSz_A)).
 
 
 ### Порядок действий:
