@@ -6,14 +6,18 @@ import {
 } from "@/utils/selenium";
 import { waitModalClosed } from "../vkHelpers";
 import { reporter } from "./reporter";
+import { findActiveLikeButtons } from "../vkDom";
 
 export async function deleteLikeWallReply(like: LikeDataItem) {
     // wait for VK scroll
     await driver.sleep(1000);
 
     // get all like buttons and click
-    let selector = `//*[class("like_btn") and class("active")]`;
-    let likeButtons = await findElements(selector, { now: true });
+    let likeButtons = await findActiveLikeButtons();
+    if (likeButtons.length === 0) {
+        const selector = `//*[class("like_btn") and class("active")]`;
+        likeButtons = await findElements(selector, { now: true });
+    }
 
     for (const button of likeButtons) {
         await clickElement(button);

@@ -22,6 +22,8 @@ let likesOrder = [
     { type: LikeType.photo_comment, reverse: false },
     { type: LikeType.video, reverse: false },
     { type: LikeType.video_comment, reverse: false },
+    { type: LikeType.clip, reverse: false },
+    { type: LikeType.clip_comment, reverse: false },
     { type: LikeType.topic_comment, reverse: false },
 ]
 
@@ -50,6 +52,9 @@ export async function deleteLikes(progress: Progress) {
             likesData = likesData.concat(likesTyped)
         }
 
+        const orderedLikes = new Set(likesData)
+        likesData = likesData.concat(likesDataRaw.filter(like => !orderedLikes.has(like)))
+
         progress.data = likesData
         progress.initialized = true
     }
@@ -65,10 +70,16 @@ export async function deleteLikes(progress: Progress) {
             continue
         }
 
+        if (isClipLike(like)) {
+            await deleteLikeBase(like)
+            continue
+        }
+
         switch (like.type) {
             case LikeType.wall:
             case LikeType.video:
             case LikeType.photo:
+            case LikeType.clip:
                 await deleteLikeBase(like)
                 break
 
@@ -81,6 +92,7 @@ export async function deleteLikes(progress: Progress) {
                 break
 
             case LikeType.video_comment:
+            case LikeType.clip_comment:
                 await deleteLikeVideoComments(like)
                 break
 
@@ -99,6 +111,11 @@ export async function deleteLikes(progress: Progress) {
 async function deleteLikeManual(like: LikeDataItem) {
     await reporter.report(like.url, "Требуется удаление вручную")
     await manualRemoveReporter.report(like.url, "Требуется удаление вручную")
+}
+
+function isClipLike(like: LikeDataItem) {
+    const type = String(like.type).toLowerCase()
+    return type.includes("clip") || /(^|[/?#=&])clip-?\d+/i.test(like.url) || like.url.includes("/clips")
 }
 
 

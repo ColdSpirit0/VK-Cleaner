@@ -1,8 +1,9 @@
 import { abortSignal, Progress, TaskCancelledError } from "@/classes/Progress";
 import { Reporter } from "@/classes/Reporter";
 import { Task } from "@/classes/Task";
-import { clickElement, findElement, hoverElement, scrollToBottom, waitActionComplete } from "@/utils/selenium";
+import { findElement, hoverElement, scrollToBottom, waitActionComplete } from "@/utils/selenium";
 import { openPage } from "../vkHelpers";
+import { clickFirstElement, clickTextAction } from "../vkDom";
 
 const o = {
     groupsURL: `https://vk.com/groups/my_all_groups`,
@@ -12,9 +13,28 @@ const o = {
         actionsButton: `//*[@data-testid="desktop_group_item_button" and not(descendant-or-self::*[
             normalize-space(text())="Подписаться"
             or normalize-space(text())="Подать заявку"
-        ])]`,
-        actionUnsubscribe: `//*[@data-testid="dropdownactionsheet-item" and descendant-or-self::*[normalize-space(text())="Отписаться"]]`,
-        warningModalUnsubscribe: `//*[@id="box_layer"]//*[class("FlatButton") and descendant-or-self::*[normalize-space(text())="Отписаться"]]`,
+        ])] |
+            //*[(@role="button" or self::button) and descendant-or-self::*[
+                normalize-space(text())="Вы участник"
+                or normalize-space(text())="Подписки"
+                or normalize-space(text())="Вы подписаны"
+            ]]`,
+        actionUnsubscribe: [
+            `//*[@data-testid="dropdownactionsheet-item" and descendant-or-self::*[
+                normalize-space(text())="Отписаться"
+                or normalize-space(text())="Выйти из группы"
+                or normalize-space(text())="Покинуть"
+            ]]`,
+            `[data-testid*="unsubscribe"]`,
+        ],
+        warningModalUnsubscribe: [
+            `//*[@id="box_layer"]//*[class("FlatButton") and descendant-or-self::*[
+                normalize-space(text())="Отписаться"
+                or normalize-space(text())="Выйти из группы"
+                or normalize-space(text())="Покинуть"
+            ]]`,
+            `[data-testid="modal-confirm-button"]`,
+        ],
     }
 }
 
@@ -23,7 +43,12 @@ const reporter = new Reporter(Task.ExitGroups)
 export async function exitGroups(progress: Progress) {
     await openPage(o.groupsURL)
 
-    while (await findElement(o.locators.loadMore)) {
+    while (true) {
+        const loadMore = await findElement(o.locators.loadMore, { waitTime: 1000 })
+        if (loadMore === null || !await loadMore.isDisplayed()) {
+            break
+        }
+
         if (abortSignal.aborted) throw new TaskCancelledError()
         await scrollToBottom()
         await waitActionComplete()
@@ -44,10 +69,13 @@ async function exitGroup() {
         return false
     }
 
-    await clickElement(o.locators.actionUnsubscribe, { safe: false })
+    let unsubscribeButton = await clickFirstElement(o.locators.actionUnsubscribe, { waitTime: 1000 })
+    if (unsubscribeButton === null) {
+        unsubscribeButton = await clickTextAction(["Отписаться", "Выйти из группы", "Покинуть"], { safe: false })
+    }
 
     // click exit if warning shown
-    await clickElement(o.locators.warningModalUnsubscribe, { waitTime: 500 })
+    await clickFirstElement(o.locators.warningModalUnsubscribe, { waitTime: 500 })
 
     // mouse out
     // await hoverElement("#groups_list_groups .group_list_row:not(.deleted) .group_row_photo", { now: true, safe: false })

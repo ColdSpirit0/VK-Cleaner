@@ -1,15 +1,17 @@
 import { driver } from "@/driver";
 import { LikeDataItem } from "@/parsers/LikeParser/LikeDataItem";
 import { clickElement, findElements, isElementExists, waitActionComplete } from "@/utils/selenium";
+import { findActiveLikeButtons } from "../vkDom";
 import { waitModalClosed } from "../vkHelpers";
 import { reporter } from "./reporter";
 
 const o = {
     locators: {
         // locators to check that page is loaded
-        pageWall: `//*[class("post")]`,
-        pagePhoto: `//*[@id="pv_photo"]`,
-        pageVideo: `//*[@id="react_rootVideo_page" or @id="mv_player_box"]`,
+        pageWall: `//*[class("post") or @data-post-id]`,
+        pagePhoto: `//*[@id="pv_photo" or @id="pv_box" or @data-testid="photo-viewer"]`,
+        pageVideo: `//*[@id="react_rootVideo_page" or @id="mv_player_box" or @data-testid="video_modal" or @data-testid="video_page"]`,
+        pageClip: `//*[contains(@class, "Clips") or contains(@class, "Clip") or @data-testid="clip_page" or @data-testid="clip_viewer"] | //video`,
 
         // locators for like button
         likeWall: `//*[class("PostButtonReactions--active")]`,
@@ -24,7 +26,11 @@ const o = {
 export async function deleteLikeBase(like: LikeDataItem) {
     // to be sure photo/video/other is visible
     // reload page if not
-    await ensurePageLoaded();
+    const loaded = await ensurePageLoaded();
+    if (!loaded) {
+        await reporter.report(like.url, "Страница не загрузилась")
+        return
+    }
 
     let likeButtons = await deleteLikesCommon();
 
@@ -34,15 +40,18 @@ export async function deleteLikeBase(like: LikeDataItem) {
 }
 
 export async function deleteLikesCommon() {
-    let selector = [
+    let likeButtons = await findActiveLikeButtons();
+
+    if (likeButtons.length === 0) {
+        const selector = [
         o.locators.likeWall,
         o.locators.likePhoto,
         o.locators.likeVideo,
         o.locators.likeVideo_old,
         o.locators.likeVideoComment,
-    ].join(" | ")
-
-    let likeButtons = await findElements(selector);
+        ].join(" | ")
+        likeButtons = await findElements(selector);
+    }
 
     if (likeButtons.length > 0) {
         await waitModalClosed()
@@ -61,10 +70,17 @@ export async function ensurePageLoaded() {
         o.locators.pageWall,
         o.locators.pagePhoto,
         o.locators.pageVideo,
+        o.locators.pageClip,
     ].join(" | ")
 
-    while (!await isElementExists(locator)) {
+    for (let attempt = 0; attempt < 5; attempt++) {
+        if (await isElementExists(locator)) {
+            return true
+        }
+
         await driver.navigate().refresh();
     }
+
+    return false
 }
 

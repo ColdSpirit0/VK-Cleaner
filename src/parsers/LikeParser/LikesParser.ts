@@ -39,11 +39,13 @@ export class LikesParser extends ParserAbstract {
                 // parse content
                 let items = this.parseFile(fileContent)
 
+                const likeType = LikeType[dir] ?? dir
+
                 for (const item of items) {
                     // save url and type
                     data.push({
                         url: item,
-                        type: LikeType[dir]
+                        type: likeType
                     })
                 }
             }

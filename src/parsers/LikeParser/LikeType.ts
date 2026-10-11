@@ -9,6 +9,8 @@ export enum LikeType {
     photo_comment,
     textpost,
     topic_comment,
-    video
+    video,
+    clip,
+    clip_comment
 
 }

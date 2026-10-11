@@ -312,6 +312,8 @@ function getLocator(query: QueryType): Locator {
 }
 
 function selectorToLocator(selector: string): Locator {
+    selector = selector.trim()
+
     // if xpath selector
     if (selector.startsWith("/") || selector.startsWith("(")) {
         // replace old class() to new class()

@@ -73,6 +73,12 @@ async function main() {
 
     await initDriver()
 
+    if (args.loginCheck) {
+        await loginVK()
+        logger.log("Login check completed")
+        return
+    }
+
     try {
         // work with vk
         await loginVK()
@@ -103,7 +109,7 @@ async function main() {
 }
 
 
-function parseArguments(tasks: TaskMap): { verbose?: boolean, manual?: boolean, tasks?: Task[] } {
+function parseArguments(tasks: TaskMap): { verbose?: boolean, manual?: boolean, loginCheck?: boolean, tasks?: Task[] } {
     const possibleTaskValues = "Possible values: "
         + [...tasks.keys()].map(k => Task[k]).join(", ")
 
@@ -111,6 +117,7 @@ function parseArguments(tasks: TaskMap): { verbose?: boolean, manual?: boolean, 
         .name("npm run start --")
         .option("-v --verbose", "Enable verbose mode")
         .option("-m --manual", "Run in manual mode")
+        .option("--login-check", "Only check VK login and exit without cleanup tasks")
         .option("-t --tasks <tasks...>", `Specify which tasks to run, separated by spaces.\n${possibleTaskValues}`,
             (value: string, previous: undefined | [Task]) => {
                 const task = Task[value]

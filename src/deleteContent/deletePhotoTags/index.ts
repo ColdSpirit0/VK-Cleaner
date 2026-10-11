@@ -22,6 +22,10 @@ export async function deletePhotoTags(progress: Progress) {
     let profileUrlRelative = "/" + lodash.last(profileUrlFull.split("/"))
 
     let userId = await getUserId()
+    if (userId === null) {
+        await reporter.report("Не удалось определить userId")
+        return
+    }
 
     let deletedTagsCount = 0
     while (await deletePhotoTag(userId, profileUrlRelative)) {

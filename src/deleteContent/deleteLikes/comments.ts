@@ -4,7 +4,11 @@ import { deleteLikesCommon, ensurePageLoaded } from "./base";
 import { reporter } from "./reporter";
 
 export async function deleteLikePhotoComments(like: LikeDataItem) {
-    await ensurePageLoaded()
+    const loaded = await ensurePageLoaded()
+    if (!loaded) {
+        await reporter.report(like.url, "Страница не загрузилась")
+        return
+    }
 
     // unwrap all comments
     const loadCommentsButtonSelector = `//*[@id="pv_comments_header" and starts-with(text(), "Показать ")]`
@@ -19,7 +23,11 @@ export async function deleteLikePhotoComments(like: LikeDataItem) {
 }
 
 export async function deleteLikeVideoComments(like: LikeDataItem) {
-    await ensurePageLoaded()
+    const loaded = await ensurePageLoaded()
+    if (!loaded) {
+        await reporter.report(like.url, "Страница не загрузилась")
+        return
+    }
 
     let likeElements = await deleteLikesCommon()
     await reporter.report(like.url, likeElements.length || "Лайки не найдены")
